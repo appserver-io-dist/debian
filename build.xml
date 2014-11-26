@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="appserver-io-dist/debian" basedir="." default="build">
+
+    <!-- Readin enviroment properties to env property -->
+    <property environment="env" />
+
+    <!-- Generate a timestamp to time.stamp property -->
+    <tstamp>
+        <format property="time.stamp" pattern="yyyy-MM-dd_HHmmss"/>
+    </tstamp>
+
+    <!-- Readin build property files -->
+    <property file="${basedir}/build.properties"/>
+    <property file="${basedir}/build.default.properties"/>
+
+    <!-- Set directory properties -->
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="target.dir" value="${basedir}/target" />
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="temp.dir" value="/tmp" />
+
+    <!-- ==================================================================== -->
+    <!-- Cleans the target and build directories                              -->
+    <!-- ==================================================================== -->
+    <target name="clean">
+        <delete dir="${target.dir}" includeemptydirs="true" quiet="false" verbose="false" failonerror="true"/>
+        <delete dir="${build.dir}" includeemptydirs="true" quiet="false" verbose="false" failonerror="true"/>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Prepares the build environment                                       -->
+    <!-- ==================================================================== -->
+    <target name="prepare" depends="clean">
+        <mkdir dir="${target.dir}" />
+        <mkdir dir="${build.dir}" />
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Copies source files to target dir and expand properties              -->
+    <!-- ==================================================================== -->
+    <target name="copy" depends="prepare">
+        <copy todir="${target.dir}" preservelastmodified="true" overwrite="true">
+            <fileset dir="${src.dir}">
+                <include name="**/*" />
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+
+
+        <copy todir="${php-target.dir}/re">
+            <fileset dir="${basedir}/buildfiles/debian">
+                <include name="**/*"/>
+                <exclude name="DEBIAN/**"/>
+            </fileset>
+        </copy>
+        <!-- copy the configuration file to build the .deb -->
+        <copy todir="${php-target.dir}/re">
+            <fileset dir="${basedir}/buildfiles/debian">
+                <include name="DEBIAN/**"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Installs composer in target directory                                -->
+    <!-- ==================================================================== -->
+    <target name="install-composer">
+        <get src="https://getcomposer.org/installer" dest="${temp.dir}/composer-installer" />
+        <exec dir="${temp.dir}" executable="php">
+            <arg value="composer-installer" />
+        </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Prepares the appserver sources                                       -->
+    <!-- ==================================================================== -->
+    <target name="prepare-appserver-dist">
+        <!-- install local composer -->
+        <antcall target="install-composer" />
+        <!-- get appserver sources in specific version -->
+        <get src="${appserver.src.url}" dest="${temp.dir}/appserver-src-${appserver.src.version}.zip" />
+        <!-- unzip to target dir -->
+        <unzip src="${temp.dir}/appserver-src-${appserver.src.version}.zip" dest="${target.dir}" />
+        <!-- install dependencies via composer and let postinstall-scripts proceed -->
+        <exec dir="${target.dir}/appserver-${appserver.src.version}" executable="php">
+            <arg line="${temp.dir}/composer.phar install --prefer-dist --quiet --no-interaction --ignore-platform-reqs"/>
+        </exec>
+        <!-- create deploy folder if not exists -->
+        <mkdir dir="${target.dir}/appserver-${appserver.src.version}/deploy"/>
+        <!-- deploy example app by putting it into deploy folder of runtime -->
+        <get src="${appserver.apps.example.url}" dest="${target.dir}/appserver-${appserver.src.version}/deploy/example.phar" />
+        <!-- create the .dodeploy files -->
+        <touch file="${target.dir}/appserver-${appserver.src.version}/deploy/example.phar.dodeploy" />
+        <!-- copy packaging build files to target -->
+        <copy todir="${target.dir}/appserver-${appserver.src.version}">
+            <fileset dir="${src.dir}/dist">
+                <include name="**/*"/>
+                <exclude name="DEBIAN/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target.dir}/appserver-${appserver.src.version}">
+            <fileset dir="${src.dir}/dist">
+                <include name="DEBIAN/**"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- set the permissions of the postinstall script -->
+        <chmod perm="755" file="${target.dir}/appserver-${appserver.src.version}/DEBIAN/postinst" />
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Creates a DEB package with the appserver sources                     -->
+    <!-- ==================================================================== -->
+    <target name="create-appserver-deb" depends="prepare-appserver-dist" description="Creates a DEB package with appserver sources">
+        <!-- create the .deb file -->
+        <exec dir="${target.dir}/appserver-${appserver.src.version}" executable="dpkg-deb" failonerror="true">
+            <arg line="--build ${target.dir}/appserver-${appserver.src.version} ${build.dir}/appserver-io.appserver-dist-${appserver.src.version}_amd64.deb" />
+        </exec>
+    </target>
+
+</project>
