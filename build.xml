@@ -157,8 +157,9 @@
     <!-- ==================================================================== -->
     <target name="upload-builds" description="Uploads any built package to the file-server.">
         <echo message="Now try to upload all builds to file-server"/>
-        <exec executable="scp" failonerror="true">
-            <arg line="-o StrictHostKeyChecking=no -i ${user.home}/.ssh/id_rsa &quot;${build.dir}/*.${build.name.ext}&quot; ${build.server.user}@${build.server.host}:${build.server.upload-path}"/>
+        <exec executable="sh" failonerror="true">
+            <arg value="-c" />
+            <arg value="scp -o StrictHostKeyChecking=no -i ${user.home}/.ssh/id_rsa ${build.dir}/* ${build.server.user}@${build.server.host}:${build.server.upload-path}" />
         </exec>
     </target>
 
