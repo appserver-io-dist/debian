@@ -1,5 +1,89 @@
 <?xml version="1.0"?>
-<!DOCTYPE project>
+<!DOCTYPE project [
+        <!ELEMENT project (property|tstamp|target|antcall)*>
+        <!ATTLIST project
+                name CDATA #REQUIRED
+                basedir CDATA #REQUIRED
+                default CDATA #REQUIRED>
+        <!ELEMENT property (#PCDATA)>
+        <!ATTLIST property
+                environment CDATA #IMPLIED
+                file CDATA #IMPLIED
+                name CDATA #IMPLIED
+                value CDATA #IMPLIED>
+        <!ELEMENT tstamp (format)*>
+        <!ELEMENT format (#PCDATA)>
+        <!ATTLIST format
+                property CDATA #REQUIRED
+                pattern CDATA #REQUIRED>
+        <!ELEMENT target (delete|mkdir|get|exec|antcall|unzip|move|touch|copy|chmod|untar|echo)*>
+        <!ATTLIST target
+                depends CDATA #IMPLIED
+                description CDATA #IMPLIED
+                name CDATA #REQUIRED>
+        <!ELEMENT delete (#PCDATA)>
+        <!ATTLIST delete
+                dir CDATA #REQUIRED
+                failonerror CDATA #REQUIRED
+                includeemptydirs CDATA #REQUIRED
+                quiet CDATA #REQUIRED
+                verbose CDATA #REQUIRED>
+        <!ELEMENT mkdir (#PCDATA)>
+        <!ATTLIST mkdir
+                dir CDATA #REQUIRED>
+        <!ELEMENT get (#PCDATA)>
+        <!ATTLIST get
+                dest CDATA #REQUIRED
+                src CDATA #REQUIRED>
+        <!ELEMENT exec (arg)*>
+        <!ATTLIST exec
+                dir CDATA #IMPLIED
+                executable CDATA #REQUIRED
+                failonerror CDATA #IMPLIED>
+        <!ELEMENT arg (#PCDATA)>
+        <!ATTLIST arg
+                line CDATA #IMPLIED
+                value CDATA #IMPLIED>
+        <!ELEMENT antcall (#PCDATA)>
+        <!ATTLIST antcall
+                target CDATA #REQUIRED>
+        <!ELEMENT unzip (#PCDATA)>
+        <!ATTLIST unzip
+                src CDATA #REQUIRED
+                dest CDATA #REQUIRED>
+        <!ELEMENT move (fileset)*>
+        <!ATTLIST move
+                todir CDATA #REQUIRED>
+        <!ELEMENT fileset (include|exclude)*>
+        <!ATTLIST fileset
+                dir CDATA #REQUIRED>
+        <!ELEMENT touch (#PCDATA)>
+        <!ATTLIST touch
+                file CDATA #REQUIRED>
+        <!ELEMENT copy (fileset|filterchain)*>
+        <!ATTLIST copy
+                todir CDATA #REQUIRED>
+        <!ELEMENT include (#PCDATA)>
+        <!ATTLIST include
+                name CDATA #REQUIRED>
+        <!ELEMENT exclude (#PCDATA)>
+        <!ATTLIST exclude
+                name CDATA #REQUIRED>
+        <!ELEMENT filterchain (expandproperties)*>
+        <!ELEMENT expandproperties (#PCDATA)>
+        <!ELEMENT chmod (#PCDATA)>
+        <!ATTLIST chmod
+                file CDATA #REQUIRED
+                perm CDATA #REQUIRED>
+        <!ELEMENT untar (#PCDATA)>
+        <!ATTLIST untar
+                src CDATA #REQUIRED
+                dest CDATA #REQUIRED
+                compression CDATA #REQUIRED>
+        <!ELEMENT echo (#PCDATA)>
+        <!ATTLIST echo
+                message CDATA #REQUIRED>
+        ]>
 <project name="appserver-io-dist/debian" basedir="." default="build">
 
     <!-- Readin enviroment properties to env property -->
@@ -21,50 +105,31 @@
     <property name="temp.dir" value="/tmp" />
 
     <!-- ==================================================================== -->
-    <!-- Cleans the target and build directories                              -->
+    <!-- Cleans the target directories                                        -->
     <!-- ==================================================================== -->
     <target name="clean">
         <delete dir="${target.dir}" includeemptydirs="true" quiet="false" verbose="false" failonerror="true"/>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Cleans the build directories                                         -->
+    <!-- ==================================================================== -->
+    <target name="clean-build">
         <delete dir="${build.dir}" includeemptydirs="true" quiet="false" verbose="false" failonerror="true"/>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Prepares the target dir                                              -->
+    <!-- ==================================================================== -->
+    <target name="prepare" depends="clean">
+        <mkdir dir="${target.dir}" />
     </target>
 
     <!-- ==================================================================== -->
     <!-- Prepares the build environment                                       -->
     <!-- ==================================================================== -->
-    <target name="prepare" depends="clean">
-        <mkdir dir="${target.dir}" />
+    <target name="prepare-build" depends="clean-build">
         <mkdir dir="${build.dir}" />
-    </target>
-
-    <!-- ==================================================================== -->
-    <!-- Copies source files to target dir and expand properties              -->
-    <!-- ==================================================================== -->
-    <target name="copy" depends="prepare">
-        <copy todir="${target.dir}" preservelastmodified="true" overwrite="true">
-            <fileset dir="${src.dir}">
-                <include name="**/*" />
-            </fileset>
-            <filterchain>
-                <expandproperties/>
-            </filterchain>
-        </copy>
-
-
-        <copy todir="${php-target.dir}/re">
-            <fileset dir="${basedir}/buildfiles/debian">
-                <include name="**/*"/>
-                <exclude name="DEBIAN/**"/>
-            </fileset>
-        </copy>
-        <!-- copy the configuration file to build the .deb -->
-        <copy todir="${php-target.dir}/re">
-            <fileset dir="${basedir}/buildfiles/debian">
-                <include name="DEBIAN/**"/>
-            </fileset>
-            <filterchain>
-                <expandproperties/>
-            </filterchain>
-        </copy>
     </target>
 
     <!-- ==================================================================== -->
@@ -80,31 +145,36 @@
     <!-- ==================================================================== -->
     <!-- Prepares the appserver sources                                       -->
     <!-- ==================================================================== -->
-    <target name="prepare-appserver-dist">
+    <target name="prepare-appserver-dist" depends="prepare">
         <!-- install local composer -->
         <antcall target="install-composer" />
         <!-- get appserver sources in specific version -->
         <get src="${appserver.src.url}" dest="${temp.dir}/appserver-src-${appserver.src.version}.zip" />
         <!-- unzip to target dir -->
-        <unzip src="${temp.dir}/appserver-src-${appserver.src.version}.zip" dest="${target.dir}" />
+        <unzip src="${temp.dir}/appserver-src-${appserver.src.version}.zip" dest="${temp.dir}" />
+
+        <move todir="${target.dir}/opt/appserver">
+            <fileset dir="${temp.dir}/appserver-${appserver.src.version}"/>
+        </move>
+
         <!-- install dependencies via composer and let postinstall-scripts proceed -->
-        <exec dir="${target.dir}/appserver-${appserver.src.version}" executable="php">
+        <exec dir="${target.dir}/opt/appserver" executable="php">
             <arg line="${temp.dir}/composer.phar install --prefer-dist --quiet --no-interaction --ignore-platform-reqs"/>
         </exec>
         <!-- create deploy folder if not exists -->
-        <mkdir dir="${target.dir}/appserver-${appserver.src.version}/deploy"/>
+        <mkdir dir="${target.dir}//opt/appserver/deploy"/>
         <!-- deploy example app by putting it into deploy folder of runtime -->
-        <get src="${appserver.apps.example.url}" dest="${target.dir}/appserver-${appserver.src.version}/deploy/example.phar" />
+        <get src="${appserver.apps.example.url}" dest="${target.dir}//opt/appserver/deploy/example.phar" />
         <!-- create the .dodeploy files -->
-        <touch file="${target.dir}/appserver-${appserver.src.version}/deploy/example.phar.dodeploy" />
+        <touch file="${target.dir}//opt/appserver/deploy/example.phar.dodeploy" />
         <!-- copy packaging build files to target -->
-        <copy todir="${target.dir}/appserver-${appserver.src.version}">
+        <copy todir="${target.dir}">
             <fileset dir="${src.dir}/dist">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
-        <copy todir="${target.dir}/appserver-${appserver.src.version}">
+        <copy todir="${target.dir}">
             <fileset dir="${src.dir}/dist">
                 <include name="DEBIAN/**"/>
             </fileset>
@@ -113,17 +183,70 @@
             </filterchain>
         </copy>
         <!-- set the permissions of the postinstall script -->
-        <chmod perm="755" file="${target.dir}/appserver-${appserver.src.version}/DEBIAN/postinst" />
+        <chmod perm="755" file="${target.dir}/DEBIAN/postinst" />
     </target>
 
     <!-- ==================================================================== -->
     <!-- Creates a DEB package with the appserver sources                     -->
     <!-- ==================================================================== -->
-    <target name="create-appserver-deb" depends="prepare-appserver-dist" description="Creates a DEB package with appserver sources">
+    <target name="create-appserver-dist-deb" depends="prepare-appserver-dist" description="Creates a DEB package with appserver sources">
         <!-- create the .deb file -->
-        <exec dir="${target.dir}/appserver-${appserver.src.version}" executable="dpkg-deb" failonerror="true">
-            <arg line="--build ${target.dir}/appserver-${appserver.src.version} ${build.dir}/appserver-io.appserver-dist-${appserver.src.version}_amd64.deb" />
+        <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
+            <arg line="--build ${target.dir} ${build.dir}/${build.name.prefix}dist-${appserver.src.version}${build.name.suffix}.${build.name.ext}" />
         </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Creates a DEB package for the appserver runtime                      -->
+    <!-- ==================================================================== -->
+    <target name="create-appserver-runtime-deb" depends="prepare">
+        <!-- get runtime in specific version as tar.gz -->
+        <get src="${appserver.runtime.url}" dest="${temp.dir}/${build.name.prefix}runtime-${appserver.runtime.version}${build.name.suffix}.tar.gz"/>
+        <untar src="${temp.dir}/${build.name.prefix}runtime-${appserver.runtime.version}${build.name.suffix}.tar.gz" dest="${target.dir}/opt" compression="gzip" />
+
+        <!-- copy packaging build files to target -->
+        <copy todir="${target.dir}">
+            <fileset dir="${src.dir}/runtime">
+                <include name="**/*"/>
+                <exclude name="DEBIAN/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target.dir}">
+            <fileset dir="${src.dir}/runtime">
+                <include name="DEBIAN/**"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- set the permissions of the postinstall script -->
+        <chmod perm="755" file="${target.dir}/DEBIAN/postinst" />
+        <!-- create the .deb file -->
+        <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
+            <arg line="--build ${target.dir} ${build.dir}/${build.name.prefix}runtime-${appserver.runtime.version}${build.name.suffix}.${build.name.ext}" />
+        </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Copies any built package to the snapshot hosting server.             -->
+    <!-- ==================================================================== -->
+    <target name="upload-builds" description="Uploads any built package to the file-server.">
+        <echo message="Now try to upload all builds to file-server"/>
+        <exec executable="scp" failonerror="true">
+            <arg line="-o StrictHostKeyChecking=no -i ${user.home}/.ssh/id_rsa ${build.dir}/* ${build.server.user}@${build.server.host}:${build.server.upload-path}"/>
+        </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Creates all DEB packages and uploads them to builds file-server      -->
+    <!-- ==================================================================== -->
+    <target name="build" depends="prepare-build">
+        <!-- build appserver-dist -->
+        <antcall target="create-appserver-dist-deb" />
+        <!-- build appserver-runtime -->
+        <antcall target="create-appserver-runtime-deb" />
+        <!-- upload stuff to builds file-server -->
+        <antcall target="upload-builds"/>
     </target>
 
 </project>

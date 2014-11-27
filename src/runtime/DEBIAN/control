@@ -1,4 +1,4 @@
-Package: appserver
+Package: appserver-runtime
 Source: appserver-io.runtime
 Version: ${appserver.runtime.version}
 Architecture: amd64
