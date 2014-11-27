@@ -1,18 +1,6 @@
 #!/bin/sh
 
-# Set needed files as accessable for the configured user
-chown -R www-data:www-data /opt/appserver/var
-chown -R www-data:www-data /opt/appserver/webapps
-chown -R www-data:www-data /opt/appserver/deploy
-
-# Set the permissions
-chmod 755 /etc/init.d/appserver
-chmod 755 /etc/init.d/appserver-watcher
-chmod 755 /etc/init.d/appserver-php5-fpm
-
-# Start the services
-/etc/init.d/appserver start
-/etc/init.d/appserver-watcher start
-/etc/init.d/appserver-php5-fpm start
+# Create composer symlink
+ln -s /opt/appserver/bin/composer.phar /opt/appserver/bin/composer
 
 exit 0
