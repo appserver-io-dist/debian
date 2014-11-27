@@ -170,8 +170,6 @@
         <antcall target="create-appserver-dist-deb" />
         <!-- build appserver-runtime -->
         <antcall target="create-appserver-runtime-deb" />
-        <!-- upload stuff to builds file-server -->
-        <antcall target="upload-builds"/>
     </target>
 
 </project>
