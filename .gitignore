@@ -3,5 +3,6 @@
 /build
 /.idea
 .DS_Store
+.project
 ._.DS_Store
 build.properties
