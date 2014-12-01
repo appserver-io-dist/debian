@@ -80,21 +80,21 @@
             <arg line="checkout -q ${appserver.src.version}" />
         </exec>
         <!-- move to target.dir -->
-        <move todir="${target.dir}/opt/appserver">
+        <move todir="${target.dir}/src/opt/appserver">
             <fileset dir="${temp.dir}/appserver-src"/>
         </move>
         <!-- remove git db files -->
-        <delete dir="${target.dir}/opt/appserver/.git" includeemptydirs="true" />
+        <delete dir="${target.dir}/src/opt/appserver/.git" includeemptydirs="true" />
         <!-- install dependencies via composer and let postinstall-scripts proceed -->
-        <exec dir="${target.dir}/opt/appserver" executable="php">
+        <exec dir="${target.dir}/src/opt/appserver" executable="php">
             <arg line="${temp.dir}/composer.phar install --prefer-dist --quiet --no-interaction --ignore-platform-reqs"/>
         </exec>
         <!-- create deploy folder if not exists -->
-        <mkdir dir="${target.dir}/opt/appserver/deploy"/>
+        <mkdir dir="${target.dir}/src/opt/appserver/deploy"/>
         <!-- deploy example app by putting it into deploy folder of runtime -->
-        <get src="${appserver.apps.example.url}" dest="${target.dir}/opt/appserver/deploy/example.phar" />
+        <get src="${appserver.apps.example.url}" dest="${target.dir}/src/opt/appserver/deploy/example.phar" />
         <!-- create the .dodeploy files -->
-        <touch file="${target.dir}/opt/appserver/deploy/example.phar.dodeploy" />
+        <touch file="${target.dir}/src/opt/appserver/deploy/example.phar.dodeploy" />
     </target>
 
     <!-- ==================================================================== -->
@@ -102,13 +102,13 @@
     <!-- ==================================================================== -->
     <target name="create-appserver-dist-deb" depends="prepare-appserver-dist" description="Creates a DEB package with appserver sources">
         <!-- copy packaging build files to target -->
-        <copy todir="${target.dir}">
+        <copy todir="${target.dir}/src">
             <fileset dir="${src.dir}/dist">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
-        <copy todir="${target.dir}">
+        <copy todir="${target.dir}/src">
             <fileset dir="${src.dir}/dist">
                 <include name="DEBIAN/**"/>
             </fileset>
@@ -117,10 +117,10 @@
             </filterchain>
         </copy>
         <!-- set the permissions of the postinstall script -->
-        <chmod perm="755" file="${target.dir}/DEBIAN/postinst" />
+        <chmod perm="755" file="${target.dir}/src/DEBIAN/postinst" />
         <!-- create the .deb file -->
         <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
-            <arg line="--build ${target.dir} ${build.dir}/${build.name.prefix}dist-${appserver.src.version}.${build.number}${build.name.suffix}.${build.name.ext}" />
+            <arg line="--build ${target.dir}/src ${build.dir}/${build.name.prefix}dist-${appserver.src.version}.${build.number}${build.name.suffix}.${build.name.ext}" />
         </exec>
     </target>
 
@@ -176,11 +176,8 @@
     <!-- ==================================================================== -->
     <!-- Creates all DEB packages and uploads them to builds file-server      -->
     <!-- ==================================================================== -->
-    <target name="build" depends="prepare-build">
-        <!-- build appserver-dist -->
-        <antcall target="create-appserver-dist-deb" />
-        <!-- build appserver-runtime -->
-        <antcall target="create-appserver-runtime-deb" />
+    <target name="build" depends="prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
+        <!-- nothing special to do here -->
     </target>
 
 </project>
