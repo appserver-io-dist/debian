@@ -95,6 +95,12 @@
         <get src="${appserver.apps.example.url}" dest="${target.dir}/opt/appserver/deploy/example.phar" />
         <!-- create the .dodeploy files -->
         <touch file="${target.dir}/opt/appserver/deploy/example.phar.dodeploy" />
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Creates a DEB package with the appserver sources                     -->
+    <!-- ==================================================================== -->
+    <target name="create-appserver-dist-deb" depends="prepare-appserver-dist" description="Creates a DEB package with appserver sources">
         <!-- copy packaging build files to target -->
         <copy todir="${target.dir}">
             <fileset dir="${src.dir}/dist">
@@ -112,12 +118,6 @@
         </copy>
         <!-- set the permissions of the postinstall script -->
         <chmod perm="755" file="${target.dir}/DEBIAN/postinst" />
-    </target>
-
-    <!-- ==================================================================== -->
-    <!-- Creates a DEB package with the appserver sources                     -->
-    <!-- ==================================================================== -->
-    <target name="create-appserver-dist-deb" depends="prepare-appserver-dist" description="Creates a DEB package with appserver sources">
         <!-- create the .deb file -->
         <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
             <arg line="--build ${target.dir} ${build.dir}/${build.name.prefix}dist-${appserver.src.version}.${build.number}${build.name.suffix}.${build.name.ext}" />
@@ -181,18 +181,6 @@
         <antcall target="create-appserver-dist-deb" />
         <!-- build appserver-runtime -->
         <antcall target="create-appserver-runtime-deb" />
-    </target>
-
-    <target name="test-github" >
-        <exec dir="/tmp" executable="git">
-            <arg line="clone https://${github.oauth.token}:x-oauth-basic@github.com/${appserver.src.repo} appserver-src" />
-        </exec>
-        <exec dir="/tmp/appserver-src" executable="git" outputProperty="appserver.src.version1">
-            <arg line="describe --abbrev=0 --tags" />
-        </exec>
-        <exec dir="/tmp/appserver-src" executable="git">
-            <arg line="checkout ${appserver.src.version1}" />
-        </exec>
     </target>
 
 </project>
