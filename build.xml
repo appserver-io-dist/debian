@@ -85,9 +85,11 @@
         </move>
         <!-- remove git db files -->
         <delete dir="${target.dir}/src/opt/appserver/.git" includeemptydirs="true" />
+        <!-- create the file with the version number -->
+        <echo file="${target.dir}/src/opt/appserver/etc/appserver/.release-version" message="${appserver.src.version}.${build.number}"/>
         <!-- install dependencies via composer and let postinstall-scripts proceed -->
         <exec dir="${target.dir}/src/opt/appserver" executable="php">
-            <arg line="${temp.dir}/composer.phar install --prefer-dist --quiet --no-interaction --ignore-platform-reqs"/>
+            <arg line="${temp.dir}/composer.phar install --prefer-dist --no-dev --no-interaction --ignore-platform-reqs"/>
         </exec>
         <!-- create deploy folder if not exists -->
         <mkdir dir="${target.dir}/src/opt/appserver/deploy"/>
