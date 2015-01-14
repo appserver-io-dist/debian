@@ -25,6 +25,14 @@ test -x $DAEMON || exit 0
 
 set -e
 
+###
+# Tests the config of the appserver installation without starting it
+###
+configtest() {
+    printf "%-50s" "Testing config of $NAME..."
+    echo `$DAEMON $DAEMON_OPTS -t`;
+}
+
 case "$1" in
   start)
 	echo -n "Starting $DESC: "
@@ -47,9 +55,12 @@ case "$1" in
     echo -n "Status of $DESC: "
     status -p ${PIDFILE} "$NAME"
     ;;
+ configtest)
+    configtest
+    ;;
   *)
 	N=/etc/init.d/$NAME
-	echo "Usage: $N {start|stop|restart|force-reload|status}" >&2
+	echo "Usage: $N {start|stop|restart|force-reload|status|configtest}" >&2
 	exit 1
 	;;
 esac
