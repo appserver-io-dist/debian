@@ -13,7 +13,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 BASE_PATH='/opt/appserver'
 DAEMON="${BASE_PATH}/bin/php"
-DAEMON_OPTS="-dappserver.php_sapi=appserver -dappserver.remove_functions=getenv,putenv ${BASE_PATH}/server.php"
+DAEMON_OPTS="-dappserver.php_sapi=appserver ${BASE_PATH}/server.php"
 NAME="appserver"
 DESC="appserver"
 PIDFILE="/var/run/${NAME}.pid"

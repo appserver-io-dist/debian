@@ -5,11 +5,6 @@ chown -R www-data:www-data /opt/appserver/var
 chown -R www-data:www-data /opt/appserver/webapps
 chown -R www-data:www-data /opt/appserver/deploy
 
-# run postinstall script from appserver-io/appserver composer package
-# to set correct path for specific startup scripts
-cd /opt/appserver
-./bin/php ./bin/composer.phar run-script post-install-cmd
-
 # Set the permissions
 chmod 755 /etc/init.d/appserver
 chmod 755 /etc/init.d/appserver-watcher
