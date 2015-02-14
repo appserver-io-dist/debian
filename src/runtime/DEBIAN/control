@@ -1,7 +1,7 @@
 Package: appserver-runtime
 Source: appserver-io.runtime
 Version: ${appserver.runtime.version}
-Architecture: amd64
+Architecture: ${os.architecture}
 Maintainer: Johann Zelger <jz@appserver.io>
 Depends: libc6,
   libbz2-1.0,
