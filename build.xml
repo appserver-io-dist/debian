@@ -100,9 +100,46 @@
     </target>
 
     <!-- ==================================================================== -->
+    <!-- Will split the github tag into a semver version (e.g. 1.0.0) and a   -->
+    <!-- suffix (e.g. beta)                                                   -->
+    <!-- ==================================================================== -->
+    <target name="prepare-src-version-parts" depends="get-appserver-src-version">
+        <!-- filter the version string -->
+        <filter-version param="${appserver.src.version}" />
+        <property name="appserver.src.semver" value="${RESULT_VERSION}" />
+        <property name="appserver.src.suffix" value="${RESULT_BUILD-NUMBER}" />
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Will split a string at the "-" character                             -->
+    <!-- ==================================================================== -->
+    <scriptdef name="filter-version" language="javascript">
+        <attribute name="param"/>
+        <![CDATA[
+       // getting the param
+        var param = attributes.get("param");
+
+        // preset the return values
+        var resultVersion = param;
+        var resultBuildNumber = '';
+
+        // split if necessary
+        if (param.indexOf("-") !== -1) {
+
+           resultVersion = param.substring(0, param.indexOf("-"));
+           resultBuildNumber = param.replace(resultVersion + "-", "+");
+        }
+
+        // store the result in new properties
+        project.setProperty("RESULT_VERSION", resultVersion);
+        project.setProperty("RESULT_BUILD-NUMBER", resultBuildNumber);
+    ]]>
+    </scriptdef>
+
+    <!-- ==================================================================== -->
     <!-- Creates a DEB package with the appserver sources                     -->
     <!-- ==================================================================== -->
-    <target name="create-appserver-dist-deb" depends="prepare-appserver-dist" description="Creates a DEB package with appserver sources">
+    <target name="create-appserver-dist-deb" depends="prepare-appserver-dist, prepare-src-version-parts" description="Creates a DEB package with appserver sources">
         <!-- copy packaging build files to target -->
         <copy todir="${target.dir}/src">
             <fileset dir="${src.dir}/dist">
@@ -122,7 +159,7 @@
         <chmod perm="755" file="${target.dir}/src/DEBIAN/postinst" />
         <!-- create the .deb file -->
         <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
-            <arg line="--build ${target.dir}/src ${build.dir}/${build.name.prefix}dist-${appserver.src.version}.${build.number}${build.name.suffix}.${build.name.ext}" />
+            <arg line="--build ${target.dir}/src ${build.dir}/${build.name.prefix}dist-${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
         </exec>
     </target>
 
@@ -131,12 +168,12 @@
     <!-- ==================================================================== -->
     <target name="create-appserver-runtime-deb" depends="prepare">
         <!-- get runtime in specific version as tar.gz -->
-        <get src="${appserver.runtime.url}" dest="${temp.dir}/${build.name.prefix}runtime-${appserver.runtime.version}${build.name.suffix}.tar.gz"/>
-        <untar src="${temp.dir}/${build.name.prefix}runtime-${appserver.runtime.version}${build.name.suffix}.tar.gz" dest="${target.dir}/opt" compression="gzip" />
+        <get src="${appserver.runtime.url}" dest="${temp.dir}/${appserver.runtime.package}.tar.gz"/>
+        <untar src="${temp.dir}/${appserver.runtime.package}.tar.gz" dest="${target.dir}/opt" compression="gzip" />
         <mkdir dir="${target.dir}/opt" />
         <exec executable="tar">
             <arg value="-xzf"/>
-            <arg value="${temp.dir}/${build.name.prefix}runtime-${appserver.runtime.version}${build.name.suffix}.tar.gz"/>
+            <arg value="${temp.dir}/${appserver.runtime.package}.tar.gz"/>
             <arg value="-p"/>
             <arg value="-C"/>
             <arg value="${target.dir}/opt"/>
@@ -160,7 +197,7 @@
         <chmod perm="755" file="${target.dir}/DEBIAN/postinst" />
         <!-- create the .deb file -->
         <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
-            <arg line="--build ${target.dir} ${build.dir}/${build.name.prefix}runtime-${appserver.runtime.version}${build.name.suffix}.${build.name.ext}" />
+            <arg line="--build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
         </exec>
     </target>
 
