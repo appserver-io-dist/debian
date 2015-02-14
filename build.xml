@@ -63,17 +63,10 @@
     <!-- ==================================================================== -->
     <!-- Prepares the appserver sources                                       -->
     <!-- ==================================================================== -->
-    <target name="prepare-appserver-dist" depends="prepare">
+    <target name="prepare-appserver-dist" depends="prepare, prepare-src-version-parts">
         <!-- install local composer -->
         <antcall target="install-composer" />
-        <!-- clone appserver src -->
-        <exec dir="${temp.dir}" executable="git">
-            <arg line="clone https://${github.oauth.token}:x-oauth-basic@github.com/${appserver.src.repo} appserver-src" />
-        </exec>
-        <!-- get lastest tag version -->
-        <exec dir="${temp.dir}/appserver-src" executable="git" outputProperty="appserver.src.version">
-            <arg line="describe --abbrev=0 --tags" />
-        </exec>
+        <!-- tell them what we do here -->
         <echo message="Checkout lastest tag version ${appserver.src.version}" />
         <!-- checkout lastest tag version -->
         <exec dir="${temp.dir}/appserver-src" executable="git">
@@ -86,7 +79,7 @@
         <!-- remove git db files -->
         <delete dir="${target.dir}/src/opt/appserver/.git" includeemptydirs="true" />
         <!-- create the file with the version number -->
-        <echo file="${target.dir}/src/opt/appserver/etc/appserver/.release-version" message="${appserver.src.version}.${build.number}"/>
+        <echo file="${target.dir}/src/opt/appserver/etc/appserver/.release-version" message="${appserver.src.semver}-${build.number}${appserver.src.suffix}" />
         <!-- install dependencies via composer and let postinstall-scripts proceed -->
         <exec dir="${target.dir}/src/opt/appserver" executable="php">
             <arg line="${temp.dir}/composer.phar install --prefer-dist --no-dev --no-interaction --ignore-platform-reqs"/>
