@@ -27,16 +27,7 @@ Depends: libc6,
   libcurl3,
   libltdl7,
   libjpeg8,
-  libmemcached-dev,
-  libevent-dev,
-  libev-dev,
   libcloog-ppl0 | libcloog-ppl1,
-  curl,
-  make,
-  autoconf,
-  git,
-  memcached,
-  libldap2-dev,
   libxslt1.1
 Section: php
 Priority: optional

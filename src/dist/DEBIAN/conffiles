@@ -1,1 +1,3 @@
 /opt/appserver/etc/appserver/appserver.xml
+/opt/appserver/etc/appserver/conf.d/context.xml
+/opt/appserver/etc/appserver/conf.d/virtual-hosts.xml

@@ -1,16 +1,9 @@
 #!/bin/sh
 
-# Set needed files as accessable for the configured user
-chown -R www-data:www-data /opt/appserver/var
-chown -R www-data:www-data /opt/appserver/webapps
-chown -R www-data:www-data /opt/appserver/deploy
+# Setup appserver by calling server.php with -s install to trigger install mode setup
+/opt/appserver/server.php -s install
 
-# run postinstall script from appserver-io/appserver composer package
-# to set correct path for specific startup scripts
-cd /opt/appserver
-./bin/php ./bin/composer.phar run-script post-install-cmd
-
-# Set the permissions
+# Set the permissions for init scripts
 chmod 755 /etc/init.d/appserver
 chmod 755 /etc/init.d/appserver-watcher
 chmod 755 /etc/init.d/appserver-php5-fpm
