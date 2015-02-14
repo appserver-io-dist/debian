@@ -100,6 +100,40 @@
     </target>
 
     <!-- ==================================================================== -->
+    <!-- Will check if a download of the appserver src is needed              -->
+    <!-- ==================================================================== -->
+    <target name="check-appserver-src-needed">
+        <!-- clone appserver src -->
+        <condition property="appserver.src.unneeded">
+            <or>
+                <available file="${temp.dir}/appserver-src" property="appserver.src.present"/>
+                <isset property="appserver.src.version"/>
+            </or>
+        </condition>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Will download the appserver src unless it is not needed              -->
+    <!-- ==================================================================== -->
+    <target name="get-appserver-src" depends="check-appserver-src-needed" unless="appserver.src.unneeded">
+        <!-- clone appserver src -->
+        <exec dir="${temp.dir}" executable="git">
+            <arg line="clone https://${github.oauth.token}:x-oauth-basic@github.com/${appserver.src.repo} appserver-src" />
+        </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Will provide the appserver.src.version property if not defined       -->
+    <!-- already                                                              -->
+    <!-- ==================================================================== -->
+    <target name="get-appserver-src-version" depends="get-appserver-src">
+        <!-- get lastest tag version -->
+        <exec dir="${temp.dir}/appserver-src" executable="git" outputProperty="appserver.src.version">
+            <arg line="describe --abbrev=0 --tags" />
+        </exec>
+    </target>
+
+    <!-- ==================================================================== -->
     <!-- Will split the github tag into a semver version (e.g. 1.0.0) and a   -->
     <!-- suffix (e.g. beta)                                                   -->
     <!-- ==================================================================== -->
