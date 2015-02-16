@@ -19,7 +19,7 @@ DESC="appserver"
 PIDFILE="/var/run/${NAME}.pid"
 QUIET="--quiet"
 START_OPTS="--start ${QUIET} --background --chdir ${BASE_PATH} --make-pidfile --pidfile ${PIDFILE} --exec ${DAEMON} -- ${DAEMON_OPTS}"
-STOP_OPTS="--stop --pidfile ${PIDFILE}"
+STOP_OPTS="--oknodo --stop --pidfile ${PIDFILE}"
 
 test -x $DAEMON || exit 0
 

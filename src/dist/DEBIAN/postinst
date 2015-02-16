@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # Setup appserver by calling server.php with -s install to trigger install mode setup
-/opt/appserver/server.php -s install
+cd /opt/appserver
+./server.php -s install
 
 # Set the permissions for init scripts
 chmod 755 /etc/init.d/appserver
@@ -9,8 +10,8 @@ chmod 755 /etc/init.d/appserver-watcher
 chmod 755 /etc/init.d/appserver-php5-fpm
 
 # Start the services
-/etc/init.d/appserver start
-/etc/init.d/appserver-watcher start
-/etc/init.d/appserver-php5-fpm start
+/etc/init.d/appserver restart
+/etc/init.d/appserver-watcher restart
+/etc/init.d/appserver-php5-fpm restart
 
 exit 0
