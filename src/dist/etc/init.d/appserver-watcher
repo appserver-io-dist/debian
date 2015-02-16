@@ -34,14 +34,24 @@ case "$1" in
   stop)
 	echo -n "Stopping $DESC: "
 	start-stop-daemon $STOP_OPTS
-	echo "$NAME."
+	if [ -f $PIDFILE ]
+	then
+		rm $PIDFILE
+	fi
+	echo "$NAME stopped."
 	;;
   restart|force-reload)
-	echo -n "Restarting $DESC: "
-	start-stop-daemon $STOP_OPTS
+	if [ -f $PIDFILE ]
+	then
+		echo -n "Stopping $DESC: "
+		start-stop-daemon $STOP_OPTS
+		rm $PIDFILE
+		echo "$NAME stopped."
+	fi
 	sleep 1
+	echo -n "Starting $DESC: "
 	start-stop-daemon $START_OPTS
-	echo "$NAME."
+	echo "$NAME started."
 	;;
   status)
     echo -n "Status of $DESC: "
