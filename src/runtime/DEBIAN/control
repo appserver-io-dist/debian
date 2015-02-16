@@ -1,6 +1,6 @@
 Package: appserver-runtime
 Source: appserver-io.runtime
-Version: ${appserver.runtime.version}
+Version: ${appserver.runtime.version}-${appserver.runtime.build}
 Architecture: ${os.architecture}
 Maintainer: Johann Zelger <jz@appserver.io>
 Depends: libc6,

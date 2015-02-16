@@ -1,6 +1,6 @@
 Package: appserver-dist
 Source: appserver-io.appserver
-Version: ${appserver.src.version}.${build.number}
+Version: ${appserver.src.semver}-${build.number}${appserver.src.suffix}
 Architecture: ${os.architecture}
 Maintainer: Johann Zelger <jz@appserver.io>
 Depends: appserver-runtime
