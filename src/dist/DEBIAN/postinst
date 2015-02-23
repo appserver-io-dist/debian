@@ -3,7 +3,7 @@
 set -e
 
 case "$1" in
-    install)
+    configure)
         # Setup appserver by calling server.php with -s install to trigger install mode setup
         cd /opt/appserver
         ./server.php -s install
@@ -17,28 +17,6 @@ case "$1" in
         /etc/init.d/appserver restart
         /etc/init.d/appserver-watcher restart
         /etc/init.d/appserver-php5-fpm restart
-        ;;
-
-    upgrade|abort-upgrade)
-
-        # Set the permissions for init scripts
-        chmod 755 /etc/init.d/appserver
-        chmod 755 /etc/init.d/appserver-watcher
-        chmod 755 /etc/init.d/appserver-php5-fpm
-
-        # Conditionally restart the appserver + watcher + fpm
-        if pgrep -f "appserver.php_sapi=appserver.+server\.php$" > /dev/null 2>&1
-        then
-            /etc/init.d/appserver restart
-        fi
-        if pgrep  -f "appserver.php_sapi=appserver.+server\.php -w$" > /dev/null 2>&1
-        then
-            /etc/init.d/appserver-watcher restart
-        fi
-        if pgrep -f "php-fpm.+master.+appserver" > /dev/null 2>&1
-        then
-            /etc/init.d/appserver-php5-fpm restart
-        fi
         ;;
 
     *)
