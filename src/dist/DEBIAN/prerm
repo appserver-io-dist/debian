@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Stop the services prior to un-installation
+/etc/init.d/appserver stop
+/etc/init.d/appserver-watcher stop
+/etc/init.d/appserver-php5-fpm stop
+
+exit 0
