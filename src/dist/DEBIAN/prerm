@@ -1,8 +1,22 @@
 #!/bin/sh
 
-# Stop the services prior to un-installation
-/etc/init.d/appserver stop
-/etc/init.d/appserver-watcher stop
-/etc/init.d/appserver-php5-fpm stop
+case "$1" in
+    remove)
+
+        # Stop the services prior to un-installation
+        /etc/init.d/appserver stop
+        /etc/init.d/appserver-watcher stop
+        /etc/init.d/appserver-php5-fpm stop
+        ;;
+
+    upgrade|remove|deconfigure|failed-upgrade)
+
+        ;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
 
 exit 0
