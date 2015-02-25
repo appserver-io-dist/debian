@@ -88,8 +88,6 @@
         <mkdir dir="${target.dir}/src/opt/appserver/deploy"/>
         <!-- deploy example app by putting it into deploy folder of runtime -->
         <get src="${appserver.apps.example.url}" dest="${target.dir}/src/opt/appserver/deploy/example.phar" />
-        <!-- create the .dodeploy files -->
-        <touch file="${target.dir}/src/opt/appserver/deploy/example.phar.dodeploy" />
     </target>
 
     <!-- ==================================================================== -->
