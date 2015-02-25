@@ -16,7 +16,7 @@ DESC="PHP5 Thread-Safe FastCGI Process Manager"
 NAME=appserver-php5-fpm
 DAEMON=/opt/appserver/sbin/php-fpm
 DAEMON_ARGS="--fpm-config /opt/appserver/etc/php-fpm.conf"
-PIDFILE=/opt/appserver/var/run/php-fpm.pid
+PIDFILE="/var/run/${NAME}.pid"
 TIMEOUT=30
 SCRIPTNAME=/etc/init.d/$NAME
 
