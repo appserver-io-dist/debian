@@ -21,9 +21,9 @@ case "$1" in
             # We did not get a former installed version, so we assume a fresh installation
 
             # Start the services unconditionally
-            /etc/init.d/appserver start
-            /etc/init.d/appserver-watcher start
-            /etc/init.d/appserver-php5-fpm start
+            /etc/init.d/appserver restart
+            /etc/init.d/appserver-watcher restart
+            /etc/init.d/appserver-php5-fpm restart
 
         elif [ -n "$2" ]
         then
