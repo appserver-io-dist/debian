@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Will stop services prior to package removal
+# @see https://wiki.debian.org/MaintainerScripts
 case "$1" in
     remove)
 

@@ -2,6 +2,8 @@
 
 set -e
 
+# Will start services depending on the action taken
+# @see https://wiki.debian.org/MaintainerScripts
 case "$1" in
     configure)
 
