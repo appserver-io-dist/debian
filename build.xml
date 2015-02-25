@@ -185,6 +185,7 @@
         <!-- set the permissions of the install script -->
         <chmod perm="755" file="${target.dir}/src/DEBIAN/postinst" />
         <chmod perm="755" file="${target.dir}/src/DEBIAN/prerm" />
+        <chmod perm="755" file="${target.dir}/src/DEBIAN/postrm" />
         <!-- create the .deb file -->
         <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
             <arg line="--build ${target.dir}/src ${build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
