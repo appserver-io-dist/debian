@@ -19,7 +19,6 @@
 /opt/appserver/etc/conf.d/xdebug.ini
 /opt/appserver/etc/conf.d/xsl.ini
 /opt/appserver/etc/conf.d/zip.ini
-/opt/appserver/etc/pbc.conf.json
 /opt/appserver/etc/pear.conf
 /opt/appserver/etc/php-fpm.conf
 /opt/appserver/etc/php.ini
