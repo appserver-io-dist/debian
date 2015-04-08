@@ -1,7 +1,7 @@
 Package: appserver-runtime
 Source: appserver-io.runtime
-Version: ${appserver.runtime.version}
-Architecture: amd64
+Version: ${appserver.runtime.version}-${appserver.runtime.build}
+Architecture: ${os.architecture}
 Maintainer: Johann Zelger <jz@appserver.io>
 Depends: libc6,
   libbz2-1.0,
@@ -9,6 +9,7 @@ Depends: libc6,
   libdb4.8|libdb5.1,
   libgcc1,
   libgssapi-krb5-2,
+  libfreetype6,
   libk5crypto3,
   libkrb5-3,
   libmagic1,
@@ -27,16 +28,7 @@ Depends: libc6,
   libcurl3,
   libltdl7,
   libjpeg8,
-  libmemcached-dev,
-  libevent-dev,
-  libev-dev,
   libcloog-ppl0 | libcloog-ppl1,
-  curl,
-  make,
-  autoconf,
-  git,
-  memcached,
-  libldap2-dev,
   libxslt1.1
 Section: php
 Priority: optional

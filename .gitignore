@@ -2,7 +2,9 @@
 /tmp
 /build
 /.idea
+/.settings
 .DS_Store
 .project
 ._.DS_Store
+.buildpath
 build.properties

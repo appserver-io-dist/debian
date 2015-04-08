@@ -1,22 +1,42 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project name="appserver-io-dist/debian-tests-performance" basedir=".." default="run-performance-tests">
+<project name="appserver-io-dist/fedora-tests-performance" basedir=".." default="run-performance-tests">
 
     <!-- ==================================================================== -->
     <!-- Runs all available performance tests                                 -->
     <!-- ==================================================================== -->
-    <target name="run-performance-tests">
+    <target name="run-performance-tests" depends="ensure-runtime-installed, ensure-dist-installed">
+        <!-- test if the jmeter testplan runs through without errors -->
+        <antcall target="measure-jmeter-example-testplan" />
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Tests if the jmeter testplan configured against the example app      -->
+    <!-- does run without any errors                                          -->
+    <!-- ==================================================================== -->
+    <target name="measure-jmeter-example-testplan">
+        <!-- test if the testplan runs through -->
+        <exec executable="${jmeter.vagrant.dir}/bin/jmeter" failonerror="true">
+            <arg line="-n -t ${jmeter.example-test.path}/example-testplan.jmx -l ${vagrant-reports.dir}/performance-example-testplan.jtl"/>
+        </exec>
     </target>
 
     <!-- ==================================================================== -->
     <!-- Runs all available integration tests within an expected vagrant VM   -->
     <!-- ==================================================================== -->
     <target name="run-vagrant-performance-tests">
-        <!-- try to install the appserver runtime -->
-        <exec dir="${test.basedir}" executable="bash" failonerror="true">
-            <arg value="-c" />
-            <arg value="yum -y install ${vagrant-build.dir}/${build.name.prefix}runtime-${appserver.runtime.version}-${appserver.runtime.build}.${test-os.version}.${os.architecture}.rpm" />
+        <!-- map the vagrant name according to our prepared environment -->
+        <property name="vagrant-box.name" value="${vagrant-box.prefix}Test" />
+        <!-- prepare the testing environment -->
+        <antcall target="prepare-test-environment" />
+        <!-- start our vagrant box -->
+        <antcall target="start-vagrant-box" />
+        <!-- invoke original integration tests within vagrant box -->
+        <exec dir="${temp.dir}" executable="vagrant">
+            <arg line="ssh -c 'sudo ant run-performance-tests -buildfile ${vagrant.basedir}/build.xml'" />
         </exec>
+        <!-- destroy the box after all work is done -->
+        <antcall target="destroy-vagrant-box" />
     </target>
 
 </project>

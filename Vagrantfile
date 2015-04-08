@@ -45,6 +45,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--cpus", cpus]
   end
 
-  config.vm.define :${vagrant-box.name} do |t|
+  config.vm.define :"${vagrant-box.name}" do |t|
     end
 end

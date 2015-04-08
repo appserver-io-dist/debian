@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Will stop services prior to package removal
+# @see https://wiki.debian.org/MaintainerScripts
+case "$1" in
+    remove)
+
+        # Stop the services prior to un-installation
+        /etc/init.d/appserver stop
+        /etc/init.d/appserver-watcher stop
+        /etc/init.d/appserver-php5-fpm stop
+        ;;
+
+    upgrade|remove|deconfigure|failed-upgrade)
+
+        ;;
+
+    *)
+        echo "prerm called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
+
+exit 0

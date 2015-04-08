@@ -1,4 +1,5 @@
 #!/bin/sh
 
-# install ant
-yum -y install ant ant-contrib git php-cli php-pecl-zip;
+# install ant and other dependencies
+apt-get update
+apt-get -y install ant ant-contrib git php5-cli;

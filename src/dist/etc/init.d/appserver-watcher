@@ -13,13 +13,13 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 BASE_PATH='/opt/appserver'
 DAEMON="${BASE_PATH}/bin/php"
-DAEMON_OPTS="-dappserver.php_sapi=appserver -dappserver.remove_functions=getenv,putenv ${BASE_PATH}/server.php -w"
+DAEMON_OPTS="-dappserver.php_sapi=appserver ${BASE_PATH}/server.php -w"
 NAME="appserver-watcher"
 DESC="Appserver Watcher aka Deployment Scanner"
 PIDFILE="/var/run/${NAME}.pid"
 QUIET="--quiet"
 START_OPTS="--start ${QUIET} --background --chdir ${BASE_PATH} --make-pidfile --pidfile ${PIDFILE} --exec ${DAEMON} -- ${DAEMON_OPTS}"
-STOP_OPTS="--stop --pidfile ${PIDFILE}"
+STOP_OPTS="--oknodo --stop --pidfile ${PIDFILE}"
 
 test -x $DAEMON || exit 0
 
@@ -34,14 +34,24 @@ case "$1" in
   stop)
 	echo -n "Stopping $DESC: "
 	start-stop-daemon $STOP_OPTS
-	echo "$NAME."
+	if [ -f $PIDFILE ]
+	then
+		rm $PIDFILE
+	fi
+	echo "$NAME stopped."
 	;;
   restart|force-reload)
-	echo -n "Restarting $DESC: "
-	start-stop-daemon $STOP_OPTS
+	if [ -f $PIDFILE ]
+	then
+		echo -n "Stopping $DESC: "
+		start-stop-daemon $STOP_OPTS
+		rm $PIDFILE
+		echo "$NAME stopped."
+	fi
 	sleep 1
+	echo -n "Starting $DESC: "
 	start-stop-daemon $START_OPTS
-	echo "$NAME."
+	echo "$NAME started."
 	;;
   status)
     echo -n "Status of $DESC: "

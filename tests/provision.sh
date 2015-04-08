@@ -1,4 +1,5 @@
 #!/bin/sh
 
-# install ant
-yum -y install ant;
+# install ant and other dependencies
+apt-get update
+apt-get -y install ant ant-contrib git;

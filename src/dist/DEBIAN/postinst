@@ -1,23 +1,58 @@
 #!/bin/sh
 
-# Set needed files as accessable for the configured user
-chown -R www-data:www-data /opt/appserver/var
-chown -R www-data:www-data /opt/appserver/webapps
-chown -R www-data:www-data /opt/appserver/deploy
+set -e
 
-# run postinstall script from appserver-io/appserver composer package
-# to set correct path for specific startup scripts
-cd /opt/appserver
-./bin/php ./bin/composer.phar run-script post-install-cmd
+# Will start services depending on the action taken
+# @see https://wiki.debian.org/MaintainerScripts
+case "$1" in
+    configure)
 
-# Set the permissions
-chmod 755 /etc/init.d/appserver
-chmod 755 /etc/init.d/appserver-watcher
-chmod 755 /etc/init.d/appserver-php5-fpm
+        # Setup appserver by calling server.php with -s install to trigger install mode setup
+        cd /opt/appserver
+        ./server.php -s install
 
-# Start the services
-/etc/init.d/appserver start
-/etc/init.d/appserver-watcher start
-/etc/init.d/appserver-php5-fpm start
+        # Set the permissions for init scripts
+        chmod 755 /etc/init.d/appserver
+        chmod 755 /etc/init.d/appserver-watcher
+        chmod 755 /etc/init.d/appserver-php5-fpm
+
+        if [ -z "$2" ]
+        then
+            # We did not get a former installed version, so we assume a fresh installation
+
+            # Start the services unconditionally
+            /etc/init.d/appserver start
+            /etc/init.d/appserver-watcher start
+            /etc/init.d/appserver-php5-fpm start
+
+        elif [ -n "$2" ]
+        then
+
+            # Conditionally restart the appserver + watcher + fpm
+            if pgrep -f "appserver.php_sapi=appserver.+server\.php$" > /dev/null 2>&1
+            then
+                /etc/init.d/appserver restart
+            fi
+            if pgrep  -f "appserver.php_sapi=appserver.+server\.php -w$" > /dev/null 2>&1
+            then
+                /etc/init.d/appserver-watcher restart
+            fi
+            if pgrep -f "php-fpm.+master.+appserver" > /dev/null 2>&1
+            then
+                /etc/init.d/appserver-php5-fpm restart
+            fi
+        fi
+
+        ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+
+        ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
 
 exit 0
