@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="appserver-io-dist/debian-tests-performance" basedir=".." default="run-performance-tests">
+
+    <!-- ==================================================================== -->
+    <!-- Runs all available performance tests                                 -->
+    <!-- ==================================================================== -->
+    <target name="run-performance-tests">
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Runs all available integration tests within an expected vagrant VM   -->
+    <!-- ==================================================================== -->
+    <target name="run-vagrant-performance-tests">
+        <!-- try to install the appserver runtime -->
+        <exec dir="${test.basedir}" executable="bash" failonerror="true">
+            <arg value="-c" />
+            <arg value="yum -y install ${vagrant-build.dir}/${build.name.prefix}runtime-${appserver.runtime.version}-${appserver.runtime.build}.${test-os.version}.${os.architecture}.rpm" />
+        </exec>
+    </target>
+
+</project>

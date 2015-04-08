@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="appserver-io-dist/fedora-tests" basedir=".." default="prepare-vagrant-environment">
+
+    <!-- Read in tests property files -->
+    <property file="${basedir}/tests/tests.properties"/>
+    <property file="${basedir}/tests/tests.default.properties"/>
+
+    <!-- ==================================================================== -->
+    <!-- Import the tests/*.xml files                                           -->
+    <!-- ==================================================================== -->
+    <import file="integration.xml"/>
+    <import file="performance.xml"/>
+
+    <!-- ==================================================================== -->
+    <!-- Will start a vagrant box dor testing purposes                        -->
+    <!-- ==================================================================== -->
+    <target name="start-vagrant-box">
+        <!-- issue the actual command -->
+        <exec dir="${temp.dir}" executable="vagrant" failonerror="true">
+            <arg line="up ${vagrant-box.name}" />
+        </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Will destroy any running vagrant box                                 -->
+    <!-- ==================================================================== -->
+    <target name="destroy-vagrant-box">
+        <!-- issue the actual command -->
+        <exec dir="${temp.dir}" executable="vagrant" failonerror="true">
+            <arg line="destroy -f" />
+        </exec>
+    </target>
+
+</project>

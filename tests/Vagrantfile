@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # Basic default configuration
+  config.vm.box = "chef/fedora-20"
+  config.vm.box_url = "https://vagrantcloud.com/chef/boxes/fedora-20"
+
+  # Basic network configuration
+  config.vm.network "private_network", ip: "127.0.0.11"
+  config.vm.host_name = "${vagrant-box.name}"
+
+  # Shell provisioning
+  config.vm.provision "shell", path: "provision.sh"
+
+  # Share the build folder as read only
+  config.vm.synced_folder "${build.dir}", "/vagrant/build", mount_options: ["ro"]
+
+  config.vm.define :${vagrant-box.name} do |t|
+    end
+end

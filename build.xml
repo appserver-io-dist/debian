@@ -21,6 +21,11 @@
     <property name="temp.dir" value="${basedir}/tmp" />
 
     <!-- ==================================================================== -->
+    <!-- Import the tests/*.xml files                                           -->
+    <!-- ==================================================================== -->
+    <import file="tests/test.xml"/>
+
+    <!-- ==================================================================== -->
     <!-- Cleans the target directories                                        -->
     <!-- ==================================================================== -->
     <target name="clean">
@@ -58,6 +63,44 @@
         <exec dir="${temp.dir}" executable="php">
             <arg value="composer-installer" />
         </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Updates the built packages within the repository                     -->
+    <!-- ==================================================================== -->
+    <target name="update-repository" description="Updates the built packages within the repository">
+        <echo message="Updating the repository"/>
+        
+        <!--
+            $ su repo
+            $ cd /var/www/deb.appserver.io/html
+            $ reprepro remove wheezy appserver-runtime
+            $ reprepro remove wheezy appserver-dist
+            $ reprepro includedeb wheezy appserver-runtime-1.0.0-beta1.13.linux.debian.x86_64.deb
+            $ reprepro includedeb wheezy appserver-dist-1.0.0-beta2.14.linux.debian.x86_64.deb
+        -->
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Propagates the recent build to the official release sites, updates   -->
+    <!-- release lists, etc.. Not to be mistaken for the "release" target     -->
+    <!-- ==================================================================== -->
+    <target name="release" description="Propagates the recent build to the official release sites, updates release lists, etc..">
+        <echo message="Now starting release cycle"/>
+        <!-- upload the build artifacts to the snapshot hub -->
+        <antcall target="upload-builds" />
+        <!-- update the repository -->
+        <antcall target="update-repository" />
+    </target>
+    
+    <!-- ==================================================================== -->
+    <!-- Publishes the recent build to any snapshot hubs, etc.. Not to be     -->
+    <!-- mistaken for the "release" target                                    -->
+    <!-- ==================================================================== -->
+    <target name="publish" description="Publishes the recent build to any snapshot hubs, etc..">
+        <echo message="Now starting publish cycle"/>
+        <!-- upload the build artifacts to the snapshot hub -->
+        <antcall target="upload-builds" />
     </target>
 
     <!-- ==================================================================== -->
@@ -180,6 +223,18 @@
     <!-- ==================================================================== -->
     <target name="build" depends="prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
         <!-- nothing special to do here -->
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Runs all available tests from all included test files                -->
+    <!-- ==================================================================== -->
+    <target name="run-tests" depends="prepare">
+        <!-- run all integration tests -->
+        <antcall target="start-vagrant-box" />
+        <!-- run all integration tests -->
+        <antcall target="run-vagrant-integration-tests" />
+        <!-- run all integration tests -->
+        <antcall target="destroy-vagrant-box" />
     </target>
 
 </project>
