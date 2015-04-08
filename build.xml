@@ -362,8 +362,7 @@
     <!-- Creates all RPM packages and uploads them to builds file-server      -->
     <!-- ==================================================================== -->
     <target name="build" depends="prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
-        <!-- move the files we just prepared to the build dir -->
-        <antcall target="move-build-files" />
+        <!-- nothing special to do here -->
     </target>
 
     <!-- ==================================================================== -->
