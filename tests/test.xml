@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project name="appserver-io-dist/fedora-tests" basedir=".." default="prepare-test-environment">
+<project name="appserver-io-dist/debian-tests" basedir=".." default="prepare-test-environment">
 
     <!-- Read in tests property files -->
     <property file="${basedir}/tests/tests.properties"/>
@@ -31,11 +31,11 @@
     <!-- ==================================================================== -->
     <!-- Will try to install the dist package                                 -->
     <!-- ==================================================================== -->
-    <target name="install-appserver-dist" depends="prepare-src-version-parts">
+    <target name="install-appserver-dist">
         <!-- try to install the appserver dist package -->
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value="yum -y install ${vagrant-build.dir}/${build.name.prefix}dist-${appserver.src.semver}-*${appserver.src.suffix}.${os.version.prefix}${target-os.version}.${os.architecture}.rpm" />
+            <arg value="yum -y install ${vagrant-build.dir}/${build.name.prefix}dist-*.${os.version.prefix}${target-os.version}.${os.architecture}.rpm" />
         </exec>
     </target>
 
@@ -84,6 +84,14 @@
         <copy todir="${temp.dir}" failonerror="true">
             <fileset dir="${tests.dir}">
                 <include name="provision.sh"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${basedir}">
+                <include name="Vagrantfile"/>
             </fileset>
             <filterchain>
                 <expandproperties/>

@@ -6,40 +6,39 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  # Basic default configuration
+  # Basic default configuration used for intial setup of box.
+  # Please use if packaged boxes are unavailable or unwelcome
   config.vm.box = "chef/debian-${target-os.version}"
   config.vm.box_url = "https://vagrantcloud.com/chef/boxes/debian-${target-os.version}"
 
+  # Box name and location
+  #config.vm.box = "${vagrant-box.name}"
+  #config.vm.box_url = "${vagrant-box.baseurl}/${vagrant-box.name}.box"
+
   # Basic network configuration
   config.vm.host_name = "${vagrant-box.name}"
+  # Required for NFS to work, pick any local IP. Disabled due to errors with network configuration at Fedora 21 boxes.
+  # Please enable at times and add a ", nfs: true" at the end of each folder sync
+  config.vm.network :private_network, ip: '192.168.50.50'
 
-  # Shell provisioning
+  # Share some needed folders
+  config.vm.synced_folder "${build.dir}", "${vagrant-build.dir}", nfs: true
+  config.vm.synced_folder "${reports.dir}", "${vagrant-reports.dir}", nfs: true
+  config.vm.synced_folder "${src.dir}", "${vagrant-src.dir}", nfs: true
+
+  # Shell provisioning used for intial setup of box.
+  # Please use if packaged boxes are unavailable or unwelcome
   config.vm.provision "shell", path: "provision.sh"
 
-  # Share the build folder as read only
-  config.vm.synced_folder "${build.dir}", "${vagrant-build.dir}"
-  config.vm.synced_folder "${reports.dir}", "${vagrant-reports.dir}"
-  config.vm.synced_folder "${src.dir}", "${vagrant-src.dir}"
-
   # Extend the timeout for initial connection
-  config.vm.boot_timeout = 1200
+  config.vm.boot_timeout = 600
 
   config.vm.provider "virtualbox" do |vb|
     host = RbConfig::CONFIG['host_os']
 
-    # Give VM 1/5 system memory & access to all cpu cores on the host
-    if host =~ /darwin/
-      cpus = `sysctl -n hw.ncpu`.to_i
-      # sysctl returns Bytes and we need to convert to MB
-      mem = `sysctl -n hw.memsize`.to_i / 1024 / 1024 / 5
-    elsif host =~ /linux/
-      cpus = `nproc`.to_i
-      # meminfo shows KB and we need to convert to MB
-      mem = `grep 'MemTotal' /proc/meminfo | sed -e 's/MemTotal://' -e 's/ kB//'`.to_i / 1024 / 5
-    else # sorry Windows folks, I can't help you
-      cpus = 2
-      mem = 1024
-    end
+    # Give VM 2Gb system memory & access to 2 cpu cores on the host
+    mem = 2048
+    cpus = 2
 
     vb.customize ["modifyvm", :id, "--memory", mem]
     vb.customize ["modifyvm", :id, "--cpus", cpus]
