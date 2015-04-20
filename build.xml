@@ -15,11 +15,12 @@
     <property file="${basedir}/build.default.properties"/>
 
     <!-- Set directory properties -->
-        <property name="src.dir" value="${basedir}/src" />
-        <property name="target.dir" value="${basedir}/target" />
-        <property name="build.dir" value="${basedir}/build" />
-        <property name="temp.dir" value="${basedir}/tmp" />
-        <property name="reports.dir" value="${basedir}/reports" />
+    <property name="src.dir" value="${basedir}/src" />
+    <property name="target.dir" value="${basedir}/target" />
+    <property name="build.dir" value="${basedir}/build" />
+    <property name="tests.dir" value="${basedir}/tests" />
+    <property name="temp.dir" value="${basedir}/tmp" />
+    <property name="reports.dir" value="${basedir}/reports" />
 
     <!-- ==================================================================== -->
     <!-- Import the tests/*.xml files                                           -->
@@ -245,9 +246,17 @@
     </target>
 
     <!-- ==================================================================== -->
+    <!-- Will check if a download of the appserver src is needed              -->
+    <!-- ==================================================================== -->
+    <target name="check-appserver-src-needed">
+        <!-- check if the appserver source is already present -->
+        <available file="${temp.dir}/appserver-src/.git" type="dir" property="appserver.src.unneeded"/>
+    </target>
+
+    <!-- ==================================================================== -->
     <!-- Will download the appserver src unless it is not needed              -->
     <!-- ==================================================================== -->
-    <target name="get-appserver-src">
+    <target name="get-appserver-src" depends="check-appserver-src-needed" unless="appserver.src.unneeded">
         <!-- clone appserver src -->
         <exec dir="${temp.dir}" executable="git">
             <arg line="clone https://${github.oauth.token}:x-oauth-basic@github.com/${appserver.src.repo} appserver-src" />
@@ -437,9 +446,8 @@
     <!-- ==================================================================== -->
     <!-- Creates all RPM packages locally                                     -->
     <!-- ==================================================================== -->
-    <target name="local-build" depends="prepare-build, create-appserver-dist-rpm, create-appserver-runtime-rpm">
-        <!-- move the files we just prepared to the build dir -->
-        <antcall target="move-build-files" />
+    <target name="local-build" depends="prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
+        <!-- nothing to do here -->
     </target>
 
     <!-- ==================================================================== -->
