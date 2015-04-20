@@ -190,11 +190,9 @@
     <!-- Will destroy any running vagrant box within our tmp directory if     -->
     <!-- there has been an error before                                       -->
     <!-- ==================================================================== -->
-    <target name="destroy-vagrant-box-on-error" depends="test-vagrant-box-running" if="fatal-error.occured" unless="vagrant-box.not-running">
-        <!-- issue the actual destroy command -->
-        <exec dir="${temp.dir}" executable="vagrant" failonerror="true">
-            <arg line="destroy -f" />
-        </exec>
+    <target name="destroy-vagrant-box-on-error" if="fatal-error.occured" unless="${vagrant-box.error-resistant}">
+        <!-- forward to the destroy command -->
+        <antcall target="destroy-vagrant-box" />
     </target>
 
     <!-- ==================================================================== -->
@@ -233,9 +231,6 @@
         <echo file="${target.dir}/src${appserver-base.dir}/etc/appserver/.release-version" message="${appserver.src.semver}-${build.number}${appserver.src.suffix}" />
         <!-- install dependencies via composer and let postinstall-scripts proceed -->
         <echo message="Installing composer dependencies" />
-        <exec dir="${target.dir}/src${appserver-base.dir}" executable="php">
-                    <arg line="${temp.dir}/composer.phar config github-oauth.github.com ${github.oauth.token}"/>
-                </exec>
         <exec dir="${target.dir}/src${appserver-base.dir}" executable="php">
             <arg line="${temp.dir}/composer.phar install --prefer-dist --no-dev --no-interaction --ignore-platform-reqs --optimize-autoloader"/>
         </exec>
@@ -433,10 +428,17 @@
         <!-- map the vagrant name according to the expected environment -->
         <property name="vagrant-box.name" value="${vagrant-box.prefix}Build" />
         <!-- invoke original build target within vagrant box -->
-        <exec dir="${temp.dir}" executable="sh" errorproperty="fatal-error.occured">
+        <exec dir="${temp.dir}" executable="sh" errorproperty="build.failed">
             <arg value="-c" />
             <arg value='vagrant ssh-config | ssh -F /dev/stdin ${vagrant-box.name} "sudo ant local-build -buildfile ${vagrant.basedir}/build.xml -Dgithub.oauth.token=${github.oauth.token} -Dbuild.number=${build.number} -Dtarget-os.major.version=${target-os.major.version} -Dtarget-os.minor.version=${target-os.minor.version} -Dappserver.runtime.version=${appserver.runtime.version} -Dappserver.runtime.build=${appserver.runtime.build}"' />
         </exec>
+        <!-- eliminate the possiblity of empty but existing error output -->
+        <property name="build.failed" value=""/>
+        <condition property="fatal-error.occured" value="${build.failed}">
+            <not>
+                <equals arg1="${build.failed}" arg2=""/>
+            </not>
+        </condition>
         <!-- check for a specific build failure and make an emergency destroy -->
         <antcall target="destroy-vagrant-box-on-error" />
         <!-- tell them about any failures we might encountered -->

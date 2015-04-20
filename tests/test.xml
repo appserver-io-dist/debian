@@ -35,7 +35,7 @@
         <!-- try to install the appserver dist package -->
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value="yum -y install ${vagrant-build.dir}/${build.name.prefix}dist-*.${os.version.prefix}${target-os.version}.${os.architecture}.rpm" />
+            <arg value="aptitude install ${vagrant-build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
         </exec>
     </target>
 
@@ -46,7 +46,7 @@
         <!-- try to install the appserver runtime -->
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value="yum -y install ${vagrant-build.dir}/${build.name.prefix}runtime-${appserver.runtime.version}-${appserver.runtime.build}.${os.version.prefix}${target-os.version}.${os.architecture}.rpm" />
+            <arg value="aptitude install ${vagrant-build.dir}/${appserver.runtime.package}.${build.name.ext}" />
         </exec>
     </target>
 

@@ -8,12 +8,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Basic default configuration used for intial setup of box.
   # Please use if packaged boxes are unavailable or unwelcome
-  config.vm.box = "chef/debian-${target-os.version}"
-  config.vm.box_url = "https://vagrantcloud.com/chef/boxes/debian-${target-os.version}"
+  # config.vm.box = "chef/debian-${target-os.version}"
+  # config.vm.box_url = "https://vagrantcloud.com/chef/boxes/debian-${target-os.version}"
 
   # Box name and location
-  #config.vm.box = "${vagrant-box.name}"
-  #config.vm.box_url = "${vagrant-box.baseurl}/${vagrant-box.name}.box"
+  config.vm.box = "${vagrant-box.name}"
+  config.vm.box_url = "${vagrant-box.baseurl}/${vagrant-box.name}.box"
 
   # Basic network configuration
   config.vm.host_name = "${vagrant-box.name}"
@@ -28,7 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Shell provisioning used for intial setup of box.
   # Please use if packaged boxes are unavailable or unwelcome
-  config.vm.provision "shell", path: "provision.sh"
+  # config.vm.provision "shell", path: "provision.sh"
 
   # Extend the timeout for initial connection
   config.vm.boot_timeout = 600
