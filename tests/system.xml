@@ -155,16 +155,16 @@
     <!-- ==================================================================== -->
     <target name="test-services-start">
         <echo message="Test starting service 'appserver'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="start appserver" />
+        <exec dir="${service.init.basedir}" executable="appserver" failonerror="true">
+            <arg line="start" />
         </exec>
         <echo message="Test starting service 'appserver-watcher'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="start appserver-watcher" />
+        <exec dir="${service.init.basedir}" executable="appserver-watcher" failonerror="true">
+            <arg line="start" />
         </exec>
         <echo message="Test starting service 'appserver-php5-fpm'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="start appserver-php5-fpm" />
+        <exec dir="${service.init.basedir}" executable="appserver-php5-fpm" failonerror="true">
+            <arg line="start" />
         </exec>
 
         <echo message="Starting seem to have gone well, test service states now" />
@@ -178,19 +178,19 @@
     <!-- ==================================================================== -->
     <target name="test-services-restart">
         <echo message="Test restarting service 'appserver'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="restart appserver" />
+        <exec dir="${service.init.basedir}" executable="appserver" failonerror="true">
+            <arg value="restart" />
         </exec>
         <echo message="Test restarting service 'appserver-watcher'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="restart appserver-watcher" />
+        <exec dir="${service.init.basedir}" executable="appserver-watcher" failonerror="true">
+            <arg value="restart" />
         </exec>
         <echo message="Test restarting service 'appserver-php5-fpm'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="restart appserver-php5-fpm" />
+        <exec dir="${service.init.basedir}" executable="appserver-php5-fpm" failonerror="true">
+            <arg value="restart" />
         </exec>
 
-        <echo message="Restart seem to have gone well, test service states now" />
+        <echo message="Restart seems to have gone well, test service states now" />
 
         <!-- tests if the services are running -->
         <antcall target="test-services-running" />
@@ -201,19 +201,19 @@
     <!-- ==================================================================== -->
     <target name="test-services-stop">
         <echo message="Test stopping service 'appserver'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="stop appserver" />
+        <exec dir="${service.init.basedir}" executable="appserver" failonerror="true">
+            <arg line="stop" />
         </exec>
         <echo message="Test stopping service 'appserver-watcher'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="stop appserver-watcher" />
+        <exec dir="${service.init.basedir}" executable="appserver-watcher" failonerror="true">
+            <arg line="stop" />
         </exec>
         <echo message="Test stopping service 'appserver-php5-fpm'." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="stop appserver-php5-fpm" />
+        <exec dir="${service.init.basedir}" executable="appserver-php5-fpm" failonerror="true">
+            <arg line="stop" />
         </exec>
 
-        <echo message="Stopping seem to have gone well, test service states now" />
+        <echo message="Stopping seems to have gone well, test service states now" />
 
         <!-- tests if the services are running -->
         <antcall target="test-services-stopped" />
@@ -225,19 +225,19 @@
     <target name="test-services-reachable">
         <echo message="Trying to connect to the HTTP server." />
         <waitfor maxwait="20" maxwaitunit="second" timeoutproperty="service.http.unreachable">
-            <socket server="127.0.0.1" port="9080"/>
+            <socket server="${service.base.address}" port="${service.http.default.port}"/>
         </waitfor>
         <fail if="service.http.unreachable" message="The HTTP server could not be reached."/>
 
         <echo message="Trying to connect to the HTTPS server." />
         <waitfor maxwait="20" maxwaitunit="second" timeoutproperty="service.https.unreachable">
-            <socket server="127.0.0.1" port="9443"/>
+            <socket server="${service.base.address}" port="${service.https.default.port}"/>
         </waitfor>
         <fail if="service.https.unreachable" message="The HTTPS server could not be reached."/>
 
         <echo message="Trying to connect to the PHP-FPM service." />
         <waitfor maxwait="20" maxwaitunit="second" timeoutproperty="service.php-fpm.unreachable">
-            <socket server="127.0.0.1" port="9010"/>
+            <socket server="${service.base.address}" port="${service.php-fpm.default.port}"/>
         </waitfor>
         <fail if="service.php-fpm.unreachable" message="The PHP-FPM service could not be reached."/>
     </target>
@@ -293,16 +293,40 @@
             <arg value="version"/>
         </exec>
     </target>
-    
+
     <!-- ==================================================================== -->
     <!-- Tests if the jmeter testplan configured against the example app      -->
     <!-- does run without any errors                                          -->
     <!-- ==================================================================== -->
     <target name="test-jmeter-example-testplan">
         <!-- test if the testplan runs through -->
-        <exec executable="${jmeter.vagrant.basedir}/${jmeter.package.name}/bin/jmeter" failonerror="true">
-            <arg line="-n -t ${jmeter.example-test.path}/example-testplan.jmx -l ${vagrant-reports.dir}/system-example-testplan.jtl -Jon_error=stoptestnow"/>
+        <exec executable="${jmeter.vagrant.basedir}/${jmeter.package.name}/bin/jmeter" failonerror="true" outputproperty="jmeter.example-test.output">
+            <arg line="-n -t ${jmeter.example-test.path}/example-testplan.jmx -l ${vagrant-reports.dir}/system-example-testplan.jtl -Jon_error=stoptestnow -Jloop_count=${jmeter.example.loop-count}"/>
         </exec>
+        <echo message="${jmeter.example-test.output}" />
+        <!-- parse the produced output and fail if it isn't what we expect -->
+        <parse-jmeter-output output="${jmeter.example-test.output}"/>
+        <fail if="JMETER_HAS_ERRORS" message="Jmeter tests exited with errors. See also log at ${vagrant-reports.dir}" />
     </target>
+
+    <!-- ==================================================================== -->
+    <!-- Will look for a positive percentage expressing within jmeter output. -->
+    <!-- Will set JMETER_HAS_ERRORS if there is at least on, JMETER_NO_ERRORS -->
+    <!-- otherwise                                                            -->
+    <!-- ==================================================================== -->
+    <scriptdef name="parse-jmeter-output" language="javascript">
+        <attribute name="output"/>
+        <![CDATA[
+            // getting the params
+            var output = attributes.get("output");
+            // check if there is an error percentage higher than 0.00%
+            var regexp = new RegExp('\([1-9][0-9].[0-9]+%\)|\([1-9]+.[0-9]+%\)|\([0-9]+.[1-9][0-9]%\)|\([0-9]+.[0-9][1-9]%\)', 'm');
+            if (output.search(regexp) > -1) {
+                project.setProperty("JMETER_HAS_ERRORS", true);
+            } else {
+                project.setProperty("JMETER_NO_ERRORS", true);
+            }
+        ]]>
+    </scriptdef>
 
 </project>

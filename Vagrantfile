@@ -18,13 +18,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Basic network configuration
   config.vm.host_name = "${vagrant-box.name}"
   # Required for NFS to work, pick any local IP. Disabled due to errors with network configuration at Fedora 21 boxes.
-  # Please enable at times and add a ", nfs: true" at the end of each folder sync
-  config.vm.network :private_network, ip: '192.168.50.50'
+  # Please enable at times and add a ', type: "nfs"' at the end of each folder sync
+  config.vm.network :private_network, type: "dhcp"
 
   # Share some needed folders
-  config.vm.synced_folder "${build.dir}", "${vagrant-build.dir}", nfs: true
-  config.vm.synced_folder "${reports.dir}", "${vagrant-reports.dir}", nfs: true
-  config.vm.synced_folder "${src.dir}", "${vagrant-src.dir}", nfs: true
+  config.vm.synced_folder "${temp.dir}", "${vagrant.basedir}", type: "nfs"
+  config.vm.synced_folder "${build.dir}", "${vagrant-build.dir}", type: "nfs"
+  config.vm.synced_folder "${reports.dir}", "${vagrant-reports.dir}", type: "nfs"
+  config.vm.synced_folder "${src.dir}", "${vagrant-src.dir}", type: "nfs"
 
   # Shell provisioning used for intial setup of box.
   # Please use if packaged boxes are unavailable or unwelcome
