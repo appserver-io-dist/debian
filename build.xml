@@ -159,9 +159,13 @@
         <!-- tell the user we need the box name first -->
         <fail unless="vagrant-box.name" message="Please specify the type of box to start e.g. using 'ant start-vagrant-build-box'" />
         <!-- issue the actual start command -->
-        <exec dir="${temp.dir}" executable="vagrant" failonerror="true">
+        <exec dir="${temp.dir}" executable="vagrant" errorproperty="fatal-error.occured">
             <arg line="up ${vagrant-box.name} --provider=${vagrant.provider} --destroy-on-error" />
         </exec>
+        <!-- check for a specific build failure and make an emergency destroy -->
+        <antcall target="destroy-vagrant-box-on-error" />
+        <!-- tell them about any failures we might encountered -->
+        <fail if="fatal-error.occured" message="Starting the vagrant box failed! Error message was: '${fatal-error.occured}', also see log above." />
     </target>
 
     <!-- ==================================================================== -->
@@ -484,10 +488,6 @@
         <antcall target="vagrant-run-tests" />
         <!-- destroy the box after all work is done -->
         <antcall target="destroy-vagrant-box" />
-        
-        <!-- tell them about any failures we might encountered -->
-        <fail if="system-test.failed" message="The system tests failed with message '${system-test.failed}', see log above." />
-        <fail if="performance-test.failed" message="The performance tests failed with message '${performance-test.failed}', see log above." />
     </target>
 
 </project>
