@@ -89,18 +89,18 @@
     <target name="test-services-running">
         <!-- test if the appserver service is running -->
         <echo message="Test if service 'appserver' is running." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="status appserver" />
+        <exec dir="${service.init.basedir}" executable="appserver" failonerror="true">
+            <arg line="status" />
         </exec>
         <!-- test if the appserver watcher service is running -->
         <echo message="Test if service 'appserver-watcher' is running." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="status appserver-watcher" />
+        <exec dir="${service.init.basedir}" executable="appserver-watcher" failonerror="true">
+            <arg line="status" />
         </exec>
         <!-- test if the appserver php-fpm service is running -->
         <echo message="Test if service 'appserver-php5-fpm' is running." />
-        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
-            <arg line="status appserver-php5-fpm" />
+        <exec dir="${service.init.basedir}" executable="appserver-php5-fpm" failonerror="true">
+            <arg line="status" />
         </exec>
     </target>
 
@@ -110,21 +110,21 @@
     <target name="test-services-stopped">
         <!-- test if the appserver service is inactive -->
         <echo message="Test if service 'appserver' is in a stopped state." />
-        <exec dir="${test.basedir}" executable="bash" failonerror="true">
+        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value='$(test "`systemctl is-active appserver`" != "active")' />
+            <arg value="${service.init.basedir}/appserver status; [ $? -eq 3 ]" />
         </exec>
         <!-- test if the appserver-watcher service is inactive -->
         <echo message="Test if service 'appserver-watcher' is in a stopped state." />
-        <exec dir="${test.basedir}" executable="bash" failonerror="true">
+        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value='$(test "`systemctl is-active appserver-watcher`" != "active")' />
+            <arg value="${service.init.basedir}/appserver-watcher status; [ $? -eq 3 ]" />
         </exec>
         <!-- test if the appserver-php5-fpm service is inactive -->
         <echo message="Test if service 'appserver-php5-fpm' is in a stopped state." />
-        <exec dir="${test.basedir}" executable="bash" failonerror="true">
+        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value='$(test "`systemctl is-active appserver-php5-fpm`" != "active")' />
+            <arg value="${service.init.basedir}/appserver-php5-fpm status; [ $? -eq 3 ]" />
         </exec>
     </target>
 
