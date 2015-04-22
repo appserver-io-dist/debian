@@ -183,7 +183,7 @@
     <!-- ==================================================================== -->
     <!-- Will destroy any running vagrant box within our tmp directory        -->
     <!-- ==================================================================== -->
-    <target name="destroy-vagrant-box" depends="test-vagrant-box-running" unless="vagrant-box.not-running">
+    <target name="destroy-vagrant-box">
         <!-- issue the actual destroy command -->
         <exec dir="${temp.dir}" executable="vagrant" failonerror="true">
             <arg line="destroy -f" />
