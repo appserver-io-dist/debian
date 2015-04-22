@@ -159,9 +159,16 @@
         <!-- tell the user we need the box name first -->
         <fail unless="vagrant-box.name" message="Please specify the type of box to start e.g. using 'ant start-vagrant-build-box'" />
         <!-- issue the actual start command -->
-        <exec dir="${temp.dir}" executable="vagrant" errorproperty="fatal-error.occured">
+        <exec dir="${temp.dir}" executable="vagrant" errorproperty="vagrant-box.start.failed">
             <arg line="up ${vagrant-box.name} --provider=${vagrant.provider} --destroy-on-error" />
         </exec>
+        <!-- eliminate the possiblity of empty but existing error output -->
+        <property name="vagrant-box.start.failed" value=""/>
+        <condition property="fatal-error.occured" value="${vagrant-box.start.failed}">
+            <not>
+                <equals arg1="${vagrant-box.start.failed}" arg2=""/>
+            </not>
+        </condition>
         <!-- check for a specific build failure and make an emergency destroy -->
         <antcall target="destroy-vagrant-box-on-error" />
         <!-- tell them about any failures we might encountered -->
