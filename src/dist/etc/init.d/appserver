@@ -10,6 +10,10 @@
 # Description:       starts appserver using start-stop-daemon
 ### END INIT INFO
 
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 BASE_PATH='/opt/appserver'
 DAEMON="${BASE_PATH}/bin/php"
@@ -62,8 +66,7 @@ case "$1" in
 	echo "$NAME started."
 	;;
   status)
-    echo -n "Status of $DESC: "
-    status -p ${PIDFILE} "$NAME"
+    status_of_proc -p $PIDFILE "$DAEMON" "$NAME" && exit 0 || exit $?
     ;;
  configtest)
     configtest
