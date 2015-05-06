@@ -8,3 +8,4 @@
 ._.DS_Store
 .buildpath
 build.properties
+/vendor
