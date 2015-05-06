@@ -111,29 +111,11 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Updates the built packages within the repository                     -->
-    <!-- ==================================================================== -->
-    <target name="update-repository" description="Updates the built packages within the repository">
-        <echo message="Updating the repository"/>
-        
-        <!--
-            $ su repo
-            $ cd /var/www/deb.appserver.io/html
-            $ reprepro remove wheezy appserver-runtime
-            $ reprepro remove wheezy appserver-dist
-            $ reprepro includedeb wheezy appserver-runtime-1.0.0-beta1.13.linux.debian.x86_64.deb
-            $ reprepro includedeb wheezy appserver-dist-1.0.0-beta2.14.linux.debian.x86_64.deb
-        -->
-    </target>
-
-    <!-- ==================================================================== -->
     <!-- Propagates the recent build to the official release sites, updates   -->
     <!-- release lists, etc.. Not to be mistaken for the "publish" target     -->
     <!-- ==================================================================== -->
     <target name="release" description="Propagates the recent build to the official release sites, updates release lists, etc..">
         <echo message="Now starting release cycle"/>
-        <!-- update the repository -->
-        <antcall target="update-repository" />
     </target>
 
     <!-- ==================================================================== -->
@@ -239,7 +221,7 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Creates all RPM packages within a temporarily started vagrant box.   -->
+    <!-- Creates all DEB packages within a temporarily started vagrant box.   -->
     <!-- Box will be started and destroyed automatically                      -->
     <!-- ==================================================================== -->
     <target name="build">
@@ -252,7 +234,7 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Creates all RPM packages locally                                     -->
+    <!-- Creates all DEB packages locally                                     -->
     <!-- ==================================================================== -->
     <target name="local-build" depends="prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
         <!-- nothing to do here -->
