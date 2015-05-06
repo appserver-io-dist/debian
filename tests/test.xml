@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE project>
+<project name="appserver-io-dist/debian-tests" basedir="..">
+
+    <!-- Read in tests property files -->
+    <property file="${basedir}/tests/tests.properties"/>
+    <property file="${basedir}/tests/tests.default.properties"/>
+
+    <!-- ==================================================================== -->
+    <!-- Import the tests/*.xml files                                           -->
+    <!-- ==================================================================== -->
+    <import file="system.xml"/>
+
+    <!-- ==================================================================== -->
+    <!-- Will try to install the dist package                                 -->
+    <!-- ==================================================================== -->
+    <target name="install-appserver-dist">
+        <!-- try to install the appserver dist package -->
+        <exec dir="${test.basedir}" executable="bash" failonerror="true">
+            <arg value="-c" />
+            <arg value="dpkg -i ${vagrant-build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
+        </exec>
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Will try to install the runtime package                              -->
+    <!-- ==================================================================== -->
+    <target name="install-appserver-runtime">
+        <!-- try to install the appserver runtime -->
+        <exec dir="${test.basedir}" executable="bash">
+            <arg value="-c" />
+            <arg value="dpkg -i ${vagrant-build.dir}/${appserver.runtime.package}.${build.name.ext}" />
+        </exec>
+        <exec dir="${test.basedir}" executable="bash" failonerror="true">
+            <arg value="-c" />
+            <arg value="apt-get install -fy" />
+        </exec>
+    </target>
+
+</project>

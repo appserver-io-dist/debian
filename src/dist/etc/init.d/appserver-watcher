@@ -58,7 +58,7 @@ case "$1" in
 	echo "$NAME started."
 	;;
   status)
-    status_of_proc -p $PIDFILE $DAEMON $NAME && exit 0 || exit $?
+    status_of_proc -p $PIDFILE "$DAEMON" "$NAME" && exit 0 || exit $?
     ;;
   *)
 	N=/etc/init.d/$NAME
