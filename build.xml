@@ -177,8 +177,8 @@
         <chmod perm="755" file="${target.dir}/src/DEBIAN/postinst" />
         <chmod perm="755" file="${target.dir}/src/DEBIAN/prerm" />
         <!-- create the .deb file -->
-        <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
-            <arg line="--build ${target.dir}/src ${build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
+        <exec dir="${target.dir}" executable="fakeroot" failonerror="true">
+            <arg line="dpkg-deb --build ${target.dir}/src ${build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
         </exec>
     </target>
 
@@ -215,8 +215,8 @@
         <!-- set the permissions of the postinstall script -->
         <chmod perm="755" file="${target.dir}/DEBIAN/postinst" />
         <!-- create the .deb file -->
-        <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
-            <arg line="--build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
+        <exec dir="${target.dir}" executable="fakeroot" failonerror="true">
+            <arg line="dpkg-deb --build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
         </exec>
     </target>
 
