@@ -1,6 +1,0 @@
-#!/bin/sh
-
-# Create composer symlink
-ln -sf /opt/appserver/bin/composer.phar /opt/appserver/bin/composer
-
-exit 0
