@@ -212,8 +212,6 @@
                 <expandproperties/>
             </filterchain>
         </copy>
-        <!-- set the permissions of the postinstall script -->
-        <chmod perm="755" file="${target.dir}/DEBIAN/postinst" />
         <!-- create the .deb file -->
         <exec dir="${target.dir}" executable="fakeroot" failonerror="true">
             <arg line="dpkg-deb --build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
