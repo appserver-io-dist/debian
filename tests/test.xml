@@ -29,7 +29,7 @@
         <!-- try to install the appserver runtime -->
         <exec dir="${test.basedir}" executable="bash">
             <arg value="-c" />
-            <arg value="dpkg -i ${vagrant-build.dir}/${appserver.runtime.package}.${build.name.ext}" />
+            <arg value="dpkg -i ${vagrant-build.dir}/${appserver.runtime.package}.${build.name.ext} 2> /dev/null" />
         </exec>
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
