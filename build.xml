@@ -160,13 +160,28 @@
         <antcall target="prepare-appserver-dist" />
         <!-- copy packaging build files to target -->
         <copy todir="${target.dir}/src">
-            <fileset dir="${src.dir}/dist">
+            <fileset dir="${src.dir}/generic/dist">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
         <copy todir="${target.dir}/src">
-            <fileset dir="${src.dir}/dist">
+            <fileset dir="${src.dir}/generic/dist">
+                <include name="DEBIAN/**"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${target.dir}/src" overwrite="true" failonerror="false">
+            <fileset dir="${src.dir}/${target-os.major.version}/dist">
+                <include name="**/*"/>
+                <exclude name="DEBIAN/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target.dir}/src" overwrite="true" failonerror="false">
+            <fileset dir="${src.dir}/${target-os.major.version}/dist">
                 <include name="DEBIAN/**"/>
             </fileset>
             <filterchain>
@@ -199,13 +214,28 @@
         </exec>
         <!-- copy packaging build files to target -->
         <copy todir="${target.dir}">
-            <fileset dir="${src.dir}/runtime">
+            <fileset dir="${src.dir}/generic/runtime">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
         <copy todir="${target.dir}">
-            <fileset dir="${src.dir}/runtime">
+            <fileset dir="${src.dir}/generic/runtime">
+                <include name="DEBIAN/**"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${target.dir}" overwrite="true" failonerror="false">
+            <fileset dir="${src.dir}/${target-os.major.version}/runtime">
+                <include name="**/*"/>
+                <exclude name="DEBIAN/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target.dir}" overwrite="true" failonerror="false">
+            <fileset dir="${src.dir}/${target-os.major.version}/runtime">
                 <include name="DEBIAN/**"/>
             </fileset>
             <filterchain>

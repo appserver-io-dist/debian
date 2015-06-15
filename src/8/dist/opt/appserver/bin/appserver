@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Set the default appserver installation directory
+APPSERVER_ROOT="/opt/appserver"
+
+# cd into the installation dir
+cd $APPSERVER_ROOT
+
+# Start the appserver itself
+$APPSERVER_ROOT/bin/php -dappserver.php_sapi=appserver server.php
