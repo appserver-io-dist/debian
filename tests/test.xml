@@ -18,7 +18,7 @@
         <!-- try to install the appserver dist package -->
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value="dpkg -i ${vagrant-build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
+            <arg value="dpkg -i ${vagrant-build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext} || apt-get install -fy" />
         </exec>
     </target>
 
@@ -27,7 +27,7 @@
     <!-- ==================================================================== -->
     <target name="install-appserver-runtime">
         <!-- try to install the appserver runtime -->
-        <exec dir="${test.basedir}" executable="bash">
+        <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
             <arg value="dpkg -i ${vagrant-build.dir}/${appserver.runtime.package}.${build.name.ext} || apt-get install -fy" />
         </exec>
