@@ -33,7 +33,7 @@
     <!-- ==================================================================== -->
     <!-- Import the local tests/*files                                        -->
     <!-- ==================================================================== -->
-    <import file="tests/test.xml"/>
+    <import file="tests/generic/test.xml"/>
 
     <!-- ==================================================================== -->
     <!-- Import the package build files if they are present                   -->
@@ -249,16 +249,42 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Creates all DEB packages within a temporarily started vagrant box.   -->
-    <!-- Box will be started and destroyed automatically                      -->
+    <!-- Will prepare the environment to run a testing vagrant box in         -->
     <!-- ==================================================================== -->
-    <target name="build">
-        <!-- start our vagrant box -->
-        <antcall target="start-vagrant-build-box" />
-        <!-- start the build in the box -->
-        <antcall target="vagrant-build" />
-        <!-- destroy the box after all work is done -->
-        <antcall target="destroy-vagrant-box" />   
+    <target name="prepare-test-environment" depends="prepare, clean-reports">
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${basedir}">
+                <include name="build.*"/>
+                <include name="tests/generic/*"/>
+                <include name="${codepool}/**"/>
+                <exclude name="tests/provision.sh"/>
+            </fileset>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${temp.dir}" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${basedir}/tests/${target-os.major.version}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        <!-- expand the properties within our box configuration -->
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${tests.dir}">
+                <include name="provision.sh"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${basedir}">
+                <include name="Vagrantfile"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- prepare a tmp dir for work within the VM -->
+        <mkdir dir="${temp.dir}/tmp" />
     </target>
 
     <!-- ==================================================================== -->
