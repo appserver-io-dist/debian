@@ -33,7 +33,8 @@
     <!-- ==================================================================== -->
     <!-- Import the local tests/*files                                        -->
     <!-- ==================================================================== -->
-    <import file="tests/generic/test.xml"/>
+    <import file="tests/test.xml" optional="true" />
+    <import file="tests/generic/test.xml" optional="true" />
 
     <!-- ==================================================================== -->
     <!-- Import the package build files if they are present                   -->
