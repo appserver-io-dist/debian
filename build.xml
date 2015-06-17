@@ -174,13 +174,13 @@
             </filterchain>
         </copy>
         <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
-        <copy todir="${target.dir}/src" overwrite="true" failonerror="false">
+        <copy todir="${target.dir}/src" overwrite="true" failonerror="false" quiet="true">
             <fileset dir="${src.dir}/${target-os.major.version}/dist">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
-        <copy todir="${target.dir}/src" overwrite="true" failonerror="false">
+        <copy todir="${target.dir}/src" overwrite="true" failonerror="false" quiet="true">
             <fileset dir="${src.dir}/${target-os.major.version}/dist">
                 <include name="DEBIAN/**"/>
             </fileset>
@@ -228,13 +228,13 @@
             </filterchain>
         </copy>
         <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
-        <copy todir="${target.dir}" overwrite="true" failonerror="false">
+        <copy todir="${target.dir}" overwrite="true" failonerror="false" quiet="true">
             <fileset dir="${src.dir}/${target-os.major.version}/runtime">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
-        <copy todir="${target.dir}" overwrite="true" failonerror="false">
+        <copy todir="${target.dir}" overwrite="true" failonerror="false" quiet="true">
             <fileset dir="${src.dir}/${target-os.major.version}/runtime">
                 <include name="DEBIAN/**"/>
             </fileset>
