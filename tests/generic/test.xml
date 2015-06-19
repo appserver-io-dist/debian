@@ -3,8 +3,8 @@
 <project name="appserver-io-dist/debian-tests" basedir="..">
 
     <!-- Read in tests property files -->
-    <property file="${basedir}/tests/tests.properties"/>
-    <property file="${basedir}/tests/tests.default.properties"/>
+    <property file="tests.properties"/>
+    <property file="tests.default.properties"/>
 
     <!-- ==================================================================== -->
     <!-- Import the tests/*.xml files                                           -->
