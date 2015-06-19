@@ -293,6 +293,7 @@
         <copy todir="${temp.dir}" failonerror="true">
             <fileset dir="${basedir}">
                 <include name="build.*"/>
+                <include name="buildfiles/**"/>
                 <include name="${codepool}/**"/>
             </fileset>
         </copy>
