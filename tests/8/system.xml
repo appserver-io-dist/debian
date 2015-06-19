@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project name="appserver-io-dist/debian-tests-system" basedir="..">
+<project name="appserver-io-dist/debian-8-tests-system" basedir="..">
 
     <!-- ==================================================================== -->
     <!-- Tests if the bundled services are currently running                  -->

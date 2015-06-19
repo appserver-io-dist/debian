@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project name="appserver-io-dist/debian-tests" basedir="..">
+<project name="appserver-io-dist/debian-generic-tests" basedir="..">
 
     <!-- Read in tests property files -->
     <property file="tests.properties"/>
