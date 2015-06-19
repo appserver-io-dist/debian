@@ -12,9 +12,8 @@
 
     <!-- Read in build property files -->
     <property file="${basedir}/build.properties"/>
-    <property file="${basedir}/build.default.properties"/>
-    <property file="${basedir}/buildfiles/generic/build.default.properties"/>
     <property file="${basedir}/buildfiles/${target-os.major.version}/build.default.properties"/>
+    <property file="${basedir}/buildfiles/generic/build.default.properties"/>
 
     <!-- Set directory properties -->
     <property name="src.dir" value="${basedir}/src" />
