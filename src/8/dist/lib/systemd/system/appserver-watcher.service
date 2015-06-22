@@ -3,7 +3,7 @@
 Description=appserver watcher
 
 [Service]
-ExecStart=/opt/appserver/bin/appserver-watcher -D FOREGROUND
+ExecStart=/opt/appserver/bin/php -dappserver.php_sapi=appserver -f /opt/appserver/server.php -- -w
 
 [Install]
 WantedBy=multi-user.target

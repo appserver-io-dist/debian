@@ -1,6 +1,0 @@
-#!/bin/bash
-
-APPSERVER_ROOT="/opt/appserver"
-
-cd $APPSERVER_ROOT
-$APPSERVER_ROOT/bin/php -dappserver.php_sapi=appserver -f server.php -- -w

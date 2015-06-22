@@ -23,6 +23,12 @@ case "$1" in
             ln -sf /lib/systemd/system/appserver-watcher.service /etc/systemd/system/appserver-watcher.service
             ln -sf /lib/systemd/system/appserver-php5-fpm.service /etc/systemd/system/appserver-php5-fpm.service
 
+            # Reload shared library list
+            ldconfig
+
+            # Reload the systemd daemon
+            systemctl daemon-reload
+
             # Start the appserver + watcher + fpm
             systemctl start appserver.service
             systemctl start appserver-watcher.service
