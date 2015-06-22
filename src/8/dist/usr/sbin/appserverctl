@@ -1,0 +1,35 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides: appserver
+# Short-Description: provides additional commands for appserver
+# Description: Offers additional commands for the appserver installation on the
+### END INIT INFO
+
+# Define constants holding our execution setup
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+BASE_PATH='/opt/appserver'
+DAEMON="${BASE_PATH}/bin/php"
+DAEMON_OPTS="-dappserver.php_sapi=appserver -dappserver.remove_functions=putenv,getenv ${BASE_PATH}/server.php"
+NAME="appserverctl"
+DESC="appserverctl"
+
+###
+# Tests the config of the appserver installation without starting it
+###
+configtest() {
+    printf "%-50s" "Testing config of $NAME..."
+    $DAEMON $DAEMON_OPTS -t;
+    exit $?
+}
+case "$1" in
+    configtest)
+        configtest
+        ;;
+    *)
+    N=/usr/sbin/$NAME
+        echo "Usage: $N {configtest}" >&2
+        exit 1
+        ;;
+esac
+exit 0
