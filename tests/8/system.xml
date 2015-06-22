@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE project>
-<project name="appserver-io-dist/debian-tests-system" basedir="..">
+<project name="appserver-io-dist/debian-8-tests-system" basedir="..">
 
     <!-- ==================================================================== -->
     <!-- Tests if the bundled services are currently running                  -->
@@ -8,18 +8,18 @@
     <target name="test-services-running">
         <!-- test if the appserver service is running -->
         <echo message="Test if service 'appserver' is running." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver status" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="status appserver" />
         </exec>
         <!-- test if the appserver watcher service is running -->
         <echo message="Test if service 'appserver-watcher' is running." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-watcher status" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="status appserver-watcher" />
         </exec>
         <!-- test if the appserver php-fpm service is running -->
         <echo message="Test if service 'appserver-php5-fpm' is running." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-php5-fpm status" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="status appserver-php5-fpm" />
         </exec>
     </target>
 
@@ -31,19 +31,19 @@
         <echo message="Test if service 'appserver' is in a stopped state." />
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value="${service.init.basedir}/appserver status; [ $? -eq 3 ]" />
+            <arg value='$(test "`systemctl is-active appserver`" != "active")' />
         </exec>
         <!-- test if the appserver-watcher service is inactive -->
         <echo message="Test if service 'appserver-watcher' is in a stopped state." />
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value="${service.init.basedir}/appserver-watcher status; [ $? -eq 3 ]" />
+            <arg value='$(test "`systemctl is-active appserver-watcher`" != "active")' />
         </exec>
         <!-- test if the appserver-php5-fpm service is inactive -->
         <echo message="Test if service 'appserver-php5-fpm' is in a stopped state." />
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
-            <arg value="${service.init.basedir}/appserver-php5-fpm status; [ $? -eq 3 ]" />
+            <arg value='$(test "`systemctl is-active appserver-php5-fpm`" != "active")' />
         </exec>
     </target>
 
@@ -51,8 +51,8 @@
     <!-- Tests if the additional "configtest" command works correctly         -->
     <!-- ==================================================================== -->
     <target name="test-configtest-command">
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver configtest" />
+        <exec dir="${test.basedir}" executable="appserverctl" failonerror="true">
+            <arg line="configtest" />
         </exec>
     </target>
 
@@ -61,16 +61,16 @@
     <!-- ==================================================================== -->
     <target name="test-services-start">
         <echo message="Test starting service 'appserver'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver start" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="start appserver" />
         </exec>
         <echo message="Test starting service 'appserver-watcher'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-watcher start" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="start appserver-watcher" />
         </exec>
         <echo message="Test starting service 'appserver-php5-fpm'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-php5-fpm start" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="start appserver-php5-fpm" />
         </exec>
 
         <echo message="Starting seems to have gone well, test service states now" />
@@ -84,16 +84,16 @@
     <!-- ==================================================================== -->
     <target name="test-services-restart">
         <echo message="Test restarting service 'appserver'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver restart" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="restart appserver" />
         </exec>
         <echo message="Test restarting service 'appserver-watcher'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-watcher restart" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="restart appserver-watcher" />
         </exec>
         <echo message="Test restarting service 'appserver-php5-fpm'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-php5-fpm restart" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="restart appserver-php5-fpm" />
         </exec>
 
         <echo message="Restart seems to have gone well, test service states now" />
@@ -107,16 +107,16 @@
     <!-- ==================================================================== -->
     <target name="test-services-stop">
         <echo message="Test stopping service 'appserver'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver stop" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="stop appserver" />
         </exec>
         <echo message="Test stopping service 'appserver-watcher'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-watcher stop" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="stop appserver-watcher" />
         </exec>
         <echo message="Test stopping service 'appserver-php5-fpm'." />
-        <exec dir="${service.init.basedir}" executable="bash" failonerror="true">
-            <arg line="appserver-php5-fpm stop" />
+        <exec dir="${test.basedir}" executable="systemctl" failonerror="true">
+            <arg line="stop appserver-php5-fpm" />
         </exec>
 
         <echo message="Stopping seems to have gone well, test service states now" />

@@ -12,7 +12,8 @@
 
     <!-- Read in build property files -->
     <property file="${basedir}/build.properties"/>
-    <property file="${basedir}/build.default.properties"/>
+    <property file="${basedir}/buildfiles/${target-os.major.version}/build.default.properties"/>
+    <property file="${basedir}/buildfiles/generic/build.default.properties"/>
 
     <!-- Set directory properties -->
     <property name="src.dir" value="${basedir}/src" />
@@ -33,7 +34,8 @@
     <!-- ==================================================================== -->
     <!-- Import the local tests/*files                                        -->
     <!-- ==================================================================== -->
-    <import file="tests/test.xml"/>
+    <import file="tests/${target-os.major.version}/test.xml" optional="true" />
+    <import file="tests/generic/test.xml" optional="true" />
 
     <!-- ==================================================================== -->
     <!-- Import the package build files if they are present                   -->
@@ -160,13 +162,28 @@
         <antcall target="prepare-appserver-dist" />
         <!-- copy packaging build files to target -->
         <copy todir="${target.dir}/src">
-            <fileset dir="${src.dir}/dist">
+            <fileset dir="${src.dir}/generic/dist">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
         <copy todir="${target.dir}/src">
-            <fileset dir="${src.dir}/dist">
+            <fileset dir="${src.dir}/generic/dist">
+                <include name="DEBIAN/**"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${target.dir}/src" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${src.dir}/${target-os.major.version}/dist">
+                <include name="**/*"/>
+                <exclude name="DEBIAN/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target.dir}/src" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${src.dir}/${target-os.major.version}/dist">
                 <include name="DEBIAN/**"/>
             </fileset>
             <filterchain>
@@ -199,13 +216,28 @@
         </exec>
         <!-- copy packaging build files to target -->
         <copy todir="${target.dir}">
-            <fileset dir="${src.dir}/runtime">
+            <fileset dir="${src.dir}/generic/runtime">
                 <include name="**/*"/>
                 <exclude name="DEBIAN/**"/>
             </fileset>
         </copy>
         <copy todir="${target.dir}">
-            <fileset dir="${src.dir}/runtime">
+            <fileset dir="${src.dir}/generic/runtime">
+                <include name="DEBIAN/**"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${target.dir}" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${src.dir}/${target-os.major.version}/runtime">
+                <include name="**/*"/>
+                <exclude name="DEBIAN/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${target.dir}" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${src.dir}/${target-os.major.version}/runtime">
                 <include name="DEBIAN/**"/>
             </fileset>
             <filterchain>
@@ -219,16 +251,96 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Creates all DEB packages within a temporarily started vagrant box.   -->
-    <!-- Box will be started and destroyed automatically                      -->
+    <!-- Will prepare the environment to run a vagrant box in                 -->
     <!-- ==================================================================== -->
-    <target name="build">
-        <!-- start our vagrant box -->
-        <antcall target="start-vagrant-build-box" />
-        <!-- start the build in the box -->
-        <antcall target="vagrant-build" />
-        <!-- destroy the box after all work is done -->
-        <antcall target="destroy-vagrant-box" />   
+    <target name="prepare-build-environment" depends="prepare, clean-build, clean-reports">
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${basedir}">
+               <include name="build.*"/>
+               <include name="buildfiles/**"/>
+               <include name="${codepool}/**"/>
+            </fileset>
+        </copy>
+        <!-- expand the properties within our box configuration -->
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${basedir}/buildfiles/generic">
+                <include name="Vagrantfile"/>
+                <include name="provision.sh"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${temp.dir}" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${basedir}/buildfiles/${target-os.major.version}">
+                <include name="Vagrantfile"/>
+                <include name="provision.sh"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- prepare a tmp dir for work within the VM -->
+        <mkdir dir="${temp.dir}/tmp" />
+    </target>
+
+    <!-- ==================================================================== -->
+    <!-- Will prepare the environment to run a testing vagrant box in         -->
+    <!-- ==================================================================== -->
+    <target name="prepare-test-environment" depends="prepare, clean-reports">
+        <!-- copy the basic build files -->
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${basedir}">
+                <include name="build.*"/>
+                <include name="buildfiles/**"/>
+                <include name="${codepool}/**"/>
+            </fileset>
+        </copy>
+        <copy todir="${temp.dir}/tests" failonerror="true">
+            <fileset dir="${basedir}/tests">
+                <include name="*/**"/>
+                <exclude name="*/provision.sh"/>
+            </fileset>
+        </copy>
+        <!-- expand the properties within our box configuration -->
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${tests.dir}/generic">
+                <include name="provision.sh"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${temp.dir}" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${tests.dir}/${target-os.major.version}">
+                <include name="provision.sh"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- expand the properties within our box configuration -->
+        <copy todir="${temp.dir}" failonerror="true">
+            <fileset dir="${basedir}/buildfiles/generic">
+                <include name="Vagrantfile"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- overwrite the generic files with the version sepcific ones, do not fail if there are none -->
+        <copy todir="${temp.dir}" overwrite="true" failonerror="false" quiet="true">
+            <fileset dir="${basedir}/buildfiles/${target-os.major.version}">
+                <include name="Vagrantfile"/>
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <!-- prepare a tmp dir for work within the VM -->
+        <mkdir dir="${temp.dir}/tmp" />
     </target>
 
     <!-- ==================================================================== -->
