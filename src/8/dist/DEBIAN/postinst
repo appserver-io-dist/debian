@@ -1,0 +1,72 @@
+#!/bin/sh
+
+set -e
+
+# Will start services depending on the action taken
+# @see https://wiki.debian.org/MaintainerScripts
+case "$1" in
+    configure)
+
+        # Setup appserver by calling server.php with -s install to trigger install mode setup
+        cd /opt/appserver
+        ./server.php -s install
+
+        # Set the permissions for init scripts
+        chmod 755 /usr/sbin/appserverctl
+
+        if [ -z "$2" ]
+        then
+            # We did not get a former installed version, so we assume a fresh installation
+
+            # Make the link to our system systemd file
+            ln -sf /lib/systemd/system/appserver.service /etc/systemd/system/appserver.service
+            ln -sf /lib/systemd/system/appserver-watcher.service /etc/systemd/system/appserver-watcher.service
+            ln -sf /lib/systemd/system/appserver-php5-fpm.service /etc/systemd/system/appserver-php5-fpm.service
+
+            # Reload shared library list
+            ldconfig
+
+            # Reload the systemd daemon
+            systemctl daemon-reload
+
+            # Start the appserver + watcher + fpm
+            systemctl start appserver.service
+            systemctl start appserver-watcher.service
+            systemctl start appserver-php5-fpm.service
+
+        elif [ -n "$2" ]
+        then
+
+            # Conditionally restart the appserver + watcher + fpm
+            systemctl status appserver > /dev/null 2>&1;
+            if [ $? -eq 0 ]
+            then
+                systemctl restart appserver.service
+            fi
+
+            systemctl status appserver-watcher > /dev/null 2>&1;
+            if [ $? -eq 0 ]
+            then
+                systemctl restart appserver-watcher.service
+            fi
+
+            systemctl status appserver-php5-fpm > /dev/null 2>&1;
+            if [ $? -eq 0 ]
+            then
+                systemctl restart appserver-php5-fpm.service
+            fi
+        fi
+
+        ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+
+        ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 0
+        ;;
+esac
+
+exit 0

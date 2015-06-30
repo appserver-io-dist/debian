@@ -38,11 +38,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     host = RbConfig::CONFIG['host_os']
 
     # Give VM 2Gb system memory & access to 2 cpu cores on the host
-    mem = 2048
-    cpus = 2
-
-    vb.customize ["modifyvm", :id, "--memory", mem]
-    vb.customize ["modifyvm", :id, "--cpus", cpus]
+    vb.customize ["modifyvm", :id, "--memory", "2048"]
+    vb.customize ["modifyvm", :id, "--cpus", "2"]
+    vb.customize ["modifyvm", :id, "--cpuexecutioncap", "90"]
   end
 
   config.vm.define :"${vagrant-box.name}" do |t|
