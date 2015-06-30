@@ -6,7 +6,7 @@ Maintainer: Johann Zelger <jz@appserver.io>
 Depends: libc6,
   libbz2-1.0,
   libcomerr2,
-  libdb4.8|libdb5.1,
+  libdb4.8|libdb5.1|libdb5.3,
   libgcc1,
   libgssapi-krb5-2,
   libfreetype6,
@@ -27,8 +27,8 @@ Depends: libc6,
   libjpeg62,
   libcurl3,
   libltdl7,
-  libjpeg8,
-  libcloog-ppl0 | libcloog-ppl1,
+  libjpeg8|libjpeg62-turbo,
+  libcloog-ppl0|libcloog-ppl1,
   libxslt1.1
 Section: php
 Priority: optional
