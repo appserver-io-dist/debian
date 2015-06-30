@@ -5,6 +5,8 @@
     <!-- Read in tests property files -->
     <property file="tests.properties"/>
     <property file="tests.default.properties"/>
+    <property file="${basedir}/tests/generic/tests.properties"/>
+    <property file="${basedir}/tests/generic/tests.default.properties"/>
 
     <!-- ==================================================================== -->
     <!-- Import the tests/*.xml files                                           -->
