@@ -151,6 +151,11 @@
         <!-- filter the version string -->
         <filter-version param="${appserver.src.version}" />
         <property name="appserver.src.semver" value="${RESULT_VERSION}" />
+        <condition property="appserver.src.suffix" value="+${RESULT_BUILD-NUMBER}">
+            <not>
+                <equals arg1="${RESULT_BUILD-NUMBER}" arg2="" />
+            </not>
+        </condition>
         <property name="appserver.src.suffix" value="${RESULT_BUILD-NUMBER}" />
     </target>
 
@@ -195,7 +200,7 @@
         <chmod perm="755" file="${target.dir}/src/DEBIAN/prerm" />
         <!-- create the .deb file -->
         <exec dir="${target.dir}" executable="fakeroot" failonerror="true">
-            <arg line="dpkg-deb --build ${target.dir}/src ${build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}_${os.architecture}.${build.name.ext}" />
+            <arg line="dpkg-deb --build ${target.dir}/src ${build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}~deb${target-os.major.version}_${os.architecture}.${build.name.ext}" />
         </exec>
     </target>
 
