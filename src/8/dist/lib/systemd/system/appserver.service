@@ -4,6 +4,7 @@ Description=appserver
 
 [Service]
 ExecStart=/opt/appserver/bin/php -dappserver.php_sapi=appserver -f /opt/appserver/server.php
+WorkingDirectory=/opt/appserver/
 
 [Install]
 WantedBy=multi-user.target
