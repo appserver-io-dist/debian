@@ -37,6 +37,9 @@ case "$1" in
         elif [ -n "$2" ]
         then
         
+            # Reload shared library list
+            ldconfig
+        
             # Reload the systemd daemon due to file overrides
             systemctl daemon-reload
 
