@@ -29,7 +29,8 @@ Depends: libc6,
   libltdl7,
   libjpeg8|libjpeg62-turbo,
   libcloog-ppl0|libcloog-ppl1,
-  libxslt1.1
+  libxslt1.1i,
+  libicu52
 Section: php
 Priority: optional
 Homepage: http://appserver.io
