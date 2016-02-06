@@ -30,7 +30,7 @@ Depends: libc6,
   libjpeg8|libjpeg62-turbo,
   libcloog-ppl0|libcloog-ppl1,
   libxslt1.1,
-  libicu52
+  libicu48|libicu52
 Section: php
 Priority: optional
 Homepage: http://appserver.io
