@@ -26,6 +26,11 @@
     <!-- Will try to install the runtime package                              -->
     <!-- ==================================================================== -->
     <target name="install-appserver-runtime">
+        <!-- try to update the sources list -->
+        <exec dir="${test.basedir}" executable="bash" failonerror="true">
+            <arg value="-c" />
+            <arg value="apt-get update" />
+        </exec>
         <!-- try to install the appserver runtime -->
         <exec dir="${test.basedir}" executable="bash" failonerror="true">
             <arg value="-c" />
