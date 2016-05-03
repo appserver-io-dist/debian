@@ -7,7 +7,6 @@
 /opt/appserver/etc/conf.d/intl.ini
 /opt/appserver/etc/conf.d/ioncube.ini
 /opt/appserver/etc/conf.d/mbstring.ini
-/opt/appserver/etc/conf.d/memcached.ini
 /opt/appserver/etc/conf.d/mysqli.ini
 /opt/appserver/etc/conf.d/mysql.ini
 /opt/appserver/etc/conf.d/opcache.ini
