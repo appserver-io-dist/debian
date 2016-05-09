@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Set the default appserver installation directory
+APPSERVER_ROOT="/opt/appserver"
+
+# Start the appserver itself
+$APPSERVER_ROOT/bin/php -dappserver.php_sapi=appserver $APPSERVER_ROOT/server.php -b=$APPSERVER_ROOT/etc/appserver/conf.d/bootstrap-runner.xml -c=$APPSERVER_ROOT/etc/appserver/appserver-runner.xml
