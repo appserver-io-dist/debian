@@ -12,34 +12,54 @@ case "$1" in
         ./server.php -s install
 
         # Set the permissions for init scripts
-        chmod 755 /etc/init.d/appserver
-        chmod 755 /etc/init.d/appserver-watcher
-        chmod 755 /etc/init.d/appserver-php5-fpm
+        chmod 755 /usr/sbin/appserverctl
 
         if [ -z "$2" ]
         then
             # We did not get a former installed version, so we assume a fresh installation
 
-            # Start the services unconditionally
-            /etc/init.d/appserver start
-            /etc/init.d/appserver-watcher start
-            /etc/init.d/appserver-php5-fpm start
+            # Make the link to our system systemd file
+            ln -sf /lib/systemd/system/appserver.service /etc/systemd/system/appserver.service
+            ln -sf /lib/systemd/system/appserver-watcher.service /etc/systemd/system/appserver-watcher.service
+            ln -sf /lib/systemd/system/appserver-php5-fpm.service /etc/systemd/system/appserver-php5-fpm.service
+
+            # Reload shared library list
+            ldconfig
+
+            # Reload the systemd daemon
+            systemctl daemon-reload
+
+            # Start the appserver + watcher + fpm
+            systemctl start appserver.service
+            systemctl start appserver-watcher.service
+            systemctl start appserver-php5-fpm.service
 
         elif [ -n "$2" ]
         then
 
+            # Reload shared library list
+            ldconfig
+
+            # Reload the systemd daemon due to file overrides
+            systemctl daemon-reload
+
             # Conditionally restart the appserver + watcher + fpm
-            if pgrep -f "appserver.php_sapi=appserver.+server\.php$" > /dev/null 2>&1
+            systemctl status appserver > /dev/null 2>&1;
+            if [ $? -eq 0 ]
             then
-                /etc/init.d/appserver restart
+                systemctl restart appserver.service
             fi
-            if pgrep  -f "appserver.php_sapi=appserver.+server\.php -w$" > /dev/null 2>&1
+
+            systemctl status appserver-watcher > /dev/null 2>&1;
+            if [ $? -eq 0 ]
             then
-                /etc/init.d/appserver-watcher restart
+                systemctl restart appserver-watcher.service
             fi
-            if pgrep -f "php-fpm.+master.+appserver" > /dev/null 2>&1
+
+            systemctl status appserver-php5-fpm > /dev/null 2>&1;
+            if [ $? -eq 0 ]
             then
-                /etc/init.d/appserver-php5-fpm restart
+                systemctl restart appserver-php5-fpm.service
             fi
         fi
 
