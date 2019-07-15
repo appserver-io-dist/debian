@@ -250,8 +250,8 @@
             </filterchain>
         </copy>
         <!-- create the .deb file -->
-        <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
-            <arg line="--build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
+        <exec dir="${target.dir}" executable="fakeroot" failonerror="true">
+            <arg line="dpkg-deb --build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
         </exec>
     </target>
 
