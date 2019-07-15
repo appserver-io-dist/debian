@@ -74,6 +74,7 @@
     <target name="prepare" depends="clean">
         <mkdir dir="${target.dir}" />
         <mkdir dir="${temp.dir}" />
+        <mkdir dir="${build.dir}" />
     </target>
 
     <!-- ==================================================================== -->
