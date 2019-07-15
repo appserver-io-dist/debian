@@ -74,7 +74,6 @@
     <target name="prepare" depends="clean">
         <mkdir dir="${target.dir}" />
         <mkdir dir="${temp.dir}" />
-        <mkdir dir="${build.dir}" />
     </target>
 
     <!-- ==================================================================== -->
@@ -352,7 +351,7 @@
     <!-- ==================================================================== -->
     <!-- Creates all DEB packages locally                                     -->
     <!-- ==================================================================== -->
-    <target name="local-build" depends="prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
+    <target name="local-build" depends="prepare, prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
         <!-- nothing to do here -->
     </target>
 
