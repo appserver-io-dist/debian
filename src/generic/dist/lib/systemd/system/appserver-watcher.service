@@ -1,0 +1,10 @@
+
+[Unit]
+Description=appserver watcher
+
+[Service]
+ExecStart=/opt/appserver/bin/php -dappserver.php_sapi=appserver -f /opt/appserver/server.php -- -w
+WorkingDirectory=/opt/appserver/
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,34 @@
+{
+    "name": "appserver-io-dist/debian",
+    "description": "Debian build files used for builds",
+    "homepage": "https://github.com/appserver-io-dist/debian",
+    "license": "OSL-3.0",
+    "authors": [
+        {
+            "name": "Tim Wagner",
+            "email": "tw@appserver.io",
+            "homepage": "https://github.com/wagnert",
+            "role": "Developer"
+        },
+        {
+            "name": "Johann Zelger",
+            "email": "jz@appserver.io",
+            "homepage": "https://github.com/zelgerj",
+            "role": "Developer"
+        },
+        {
+            "name": "Bernhard Wick",
+            "email": "bw@appserver.io",
+            "homepage": "https://github.com/wick-ed",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "tw@appserver.io",
+        "issues": "https://github.com/appserver-io/appserver/issues",
+        "source": "https://github.com/appserver-io-dist/debian"
+    },
+    "keywords": [
+        "php application server linux debian build"
+    ]
+}

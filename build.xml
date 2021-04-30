@@ -43,6 +43,13 @@
     <import file="${package.dir}/common.xml" optional="true" />
 
     <!-- ==================================================================== -->
+    <!-- Building up runtime package name and URL here, to get additional     -->
+    <!-- data from the generic dist package first.                            -->
+    <!-- ==================================================================== -->
+    <property name="appserver.runtime.package" value="${build.name.prefix}runtime_${appserver.runtime.version}-${appserver.runtime.build}.deb${target-os.major.version}_${os.architecture}" />
+    <property name="appserver.runtime.url" value="https://github.com/appserver-io-php/runtime/releases/download/${appserver.runtime.version}/${appserver.runtime.package}.tar.gz" />
+
+    <!-- ==================================================================== -->
     <!-- Cleans the target directories                                        -->
     <!-- ==================================================================== -->
     <target name="clean">
@@ -199,8 +206,8 @@
         <chmod perm="755" file="${target.dir}/src/DEBIAN/postinst" />
         <chmod perm="755" file="${target.dir}/src/DEBIAN/prerm" />
         <!-- create the .deb file -->
-        <exec dir="${target.dir}" executable="fakeroot" failonerror="true">
-            <arg line="dpkg-deb --build ${target.dir}/src ${build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}~deb${target-os.major.version}_${os.architecture}.${build.name.ext}" />
+        <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
+            <arg line="--build ${target.dir}/src ${build.dir}/${build.name.prefix}dist_${appserver.src.semver}-${build.number}${appserver.src.suffix}~deb${target-os.major.version}_${os.architecture}.${build.name.ext}" />
         </exec>
     </target>
 
@@ -250,8 +257,8 @@
             </filterchain>
         </copy>
         <!-- create the .deb file -->
-        <exec dir="${target.dir}" executable="fakeroot" failonerror="true">
-            <arg line="dpkg-deb --build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
+        <exec dir="${target.dir}" executable="dpkg-deb" failonerror="true">
+            <arg line="--build ${target.dir} ${build.dir}/${appserver.runtime.package}.${build.name.ext}" />
         </exec>
     </target>
 
@@ -351,7 +358,7 @@
     <!-- ==================================================================== -->
     <!-- Creates all DEB packages locally                                     -->
     <!-- ==================================================================== -->
-    <target name="local-build" depends="prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
+    <target name="local-build" depends="prepare, prepare-build, create-appserver-dist-deb, create-appserver-runtime-deb">
         <!-- nothing to do here -->
     </target>
 
